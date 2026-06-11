@@ -711,6 +711,12 @@ $("#exportBtn").onclick = () => {
    BOOT
    ============================================================ */
 document.body.classList.toggle("theme-dark", state.theme==="dark");
+
+// confirmed results — seeded on load, won't overwrite manual edits
+const CONFIRMED = { group: { 1:{a:"2",b:"0"} } };
+Object.entries(CONFIRMED.group).forEach(([k,v]) => { if(!state.group[k]) state.group[k]=v; });
+save();
+
 try {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local time";
   $("#tzline").textContent = "Kick-off times shown in your timezone (" + tz + ")";
