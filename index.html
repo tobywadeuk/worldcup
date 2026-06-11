@@ -10,38 +10,38 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f5f0e8;
-    --bg-2: #ece2d3;
-    --paper: #fdfaf4;
-    --ink: #241c14;
-    --ink-muted: #6b5e4e;
-    --ink-faint: #b8a898;
-    --rule: #e0d8cc;
-    --accent: #b8852a;
-    --win: #2f7d4f;
-    --today: #c2622d;          /* warm terracotta for "today" */
-    --today-bg: rgba(194, 98, 45, 0.10);
-    --tom-bg: rgba(184, 133, 42, 0.08);
+    --bg: #eef2f8;
+    --bg-2: #dce5f0;
+    --paper: #ffffff;
+    --ink: #0c1c36;
+    --ink-muted: #46607e;
+    --ink-faint: #90aac4;
+    --rule: #cdd9e8;
+    --accent: #c8961c;
+    --win: #1b6e3a;
+    --today: #c0392b;
+    --today-bg: rgba(192, 57, 43, 0.09);
+    --tom-bg: rgba(200, 150, 28, 0.09);
     --radius: 14px;
     --radius-sm: 8px;
-    --card-shadow: 0 14px 46px rgba(74, 54, 34, 0.11), 0 2px 8px rgba(74, 54, 34, 0.05);
+    --card-shadow: 0 14px 46px rgba(12, 28, 54, 0.10), 0 2px 8px rgba(12, 28, 54, 0.05);
     color-scheme: light;
   }
 
   body.theme-dark {
-    --bg: #17130f;
-    --bg-2: #17130f;
-    --paper: #211c17;
-    --ink: #efe7da;
-    --ink-muted: #b6a690;
-    --ink-faint: #756758;
-    --rule: #38302a;
-    --accent: #e0b35e;
-    --win: #5bb583;
-    --today: #e08a4f;
-    --today-bg: rgba(224, 138, 79, 0.13);
-    --tom-bg: rgba(224, 179, 94, 0.09);
-    --card-shadow: 0 18px 52px rgba(0, 0, 0, 0.46), 0 2px 10px rgba(0, 0, 0, 0.34);
+    --bg: #07101f;
+    --bg-2: #07101f;
+    --paper: #0e1d32;
+    --ink: #dde8f5;
+    --ink-muted: #7a9bbf;
+    --ink-faint: #2e4a65;
+    --rule: #172d46;
+    --accent: #e8b83e;
+    --win: #2ecc6b;
+    --today: #e05a4a;
+    --today-bg: rgba(224, 90, 74, 0.13);
+    --tom-bg: rgba(232, 184, 62, 0.10);
+    --card-shadow: 0 18px 52px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.38);
     color-scheme: dark;
   }
 
@@ -66,8 +66,8 @@
     border: 1px solid var(--rule); border-radius: var(--radius);
     box-shadow: var(--card-shadow);
     background:
-      radial-gradient(130% 150% at 0% 0%, color-mix(in srgb, var(--win) 9%, transparent), transparent 52%),
-      radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, #2f6fb0 9%, transparent), transparent 52%),
+      radial-gradient(130% 150% at 0% 0%, color-mix(in srgb, var(--win) 11%, transparent), transparent 52%),
+      radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 52%),
       var(--paper);
   }
   /* host-nation accent: Canada red · Mexico green · USA navy */
@@ -186,6 +186,7 @@
     font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--ink-faint);
     display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
   }
+  .fix .when .city { margin-left: auto; }
   .fix.today .when { color: var(--today); }
   .fix .chip {
     font-size: 8px; letter-spacing: .6px; text-transform: uppercase;
@@ -284,8 +285,6 @@
   </header>
 
   <div class="legend">
-    <span><i style="background:var(--win)"></i> wins group / advancing</span>
-    <span><i style="background:var(--accent)"></i> runner-up</span>
     <span><i style="background:var(--ink-faint)"></i> 3rd (may qualify)</span>
   </div>
   <div class="tzline" id="tzline"></div>
@@ -332,8 +331,8 @@ const GROUPS = {
   L:["England","Croatia","Ghana","Panama"]
 };
 
-// fixtures: [matchNumber, utcISO, home, away] — real schedule, kickoff in UTC
-const FIX = {"A": [[1, "2026-06-11T19:00:00Z", "Mexico", "South Africa"], [2, "2026-06-12T02:00:00Z", "South Korea", "Czechia"], [25, "2026-06-18T16:00:00Z", "Czechia", "South Africa"], [28, "2026-06-19T01:00:00Z", "Mexico", "South Korea"], [53, "2026-06-25T01:00:00Z", "Czechia", "Mexico"], [54, "2026-06-25T01:00:00Z", "South Africa", "South Korea"]], "B": [[3, "2026-06-12T19:00:00Z", "Canada", "Bosnia & H."], [8, "2026-06-13T19:00:00Z", "Qatar", "Switzerland"], [26, "2026-06-18T19:00:00Z", "Switzerland", "Bosnia & H."], [27, "2026-06-18T22:00:00Z", "Canada", "Qatar"], [51, "2026-06-24T19:00:00Z", "Switzerland", "Canada"], [52, "2026-06-24T19:00:00Z", "Bosnia & H.", "Qatar"]], "C": [[7, "2026-06-13T22:00:00Z", "Brazil", "Morocco"], [5, "2026-06-14T01:00:00Z", "Haiti", "Scotland"], [30, "2026-06-19T22:00:00Z", "Scotland", "Morocco"], [29, "2026-06-20T01:00:00Z", "Brazil", "Haiti"], [49, "2026-06-24T22:00:00Z", "Scotland", "Brazil"], [50, "2026-06-24T22:00:00Z", "Morocco", "Haiti"]], "D": [[4, "2026-06-13T01:00:00Z", "USA", "Paraguay"], [6, "2026-06-14T04:00:00Z", "Australia", "Türkiye"], [32, "2026-06-19T19:00:00Z", "USA", "Australia"], [31, "2026-06-20T04:00:00Z", "Türkiye", "Paraguay"], [59, "2026-06-26T02:00:00Z", "Türkiye", "USA"], [60, "2026-06-26T02:00:00Z", "Paraguay", "Australia"]], "E": [[10, "2026-06-14T17:00:00Z", "Germany", "Curaçao"], [9, "2026-06-14T23:00:00Z", "Ivory Coast", "Ecuador"], [33, "2026-06-20T20:00:00Z", "Germany", "Ivory Coast"], [34, "2026-06-21T00:00:00Z", "Ecuador", "Curaçao"], [55, "2026-06-25T20:00:00Z", "Curaçao", "Ivory Coast"], [56, "2026-06-25T20:00:00Z", "Ecuador", "Germany"]], "F": [[11, "2026-06-14T20:00:00Z", "Netherlands", "Japan"], [12, "2026-06-15T02:00:00Z", "Sweden", "Tunisia"], [35, "2026-06-20T17:00:00Z", "Netherlands", "Sweden"], [36, "2026-06-21T04:00:00Z", "Tunisia", "Japan"], [57, "2026-06-25T23:00:00Z", "Japan", "Sweden"], [58, "2026-06-25T23:00:00Z", "Tunisia", "Netherlands"]], "G": [[16, "2026-06-15T19:00:00Z", "Belgium", "Egypt"], [15, "2026-06-16T01:00:00Z", "Iran", "New Zealand"], [39, "2026-06-21T19:00:00Z", "Belgium", "Iran"], [40, "2026-06-22T01:00:00Z", "New Zealand", "Egypt"], [63, "2026-06-27T03:00:00Z", "Egypt", "Iran"], [64, "2026-06-27T03:00:00Z", "New Zealand", "Belgium"]], "H": [[14, "2026-06-15T16:00:00Z", "Spain", "Cape Verde"], [13, "2026-06-15T22:00:00Z", "Saudi Arabia", "Uruguay"], [38, "2026-06-21T16:00:00Z", "Spain", "Saudi Arabia"], [37, "2026-06-21T22:00:00Z", "Uruguay", "Cape Verde"], [65, "2026-06-27T00:00:00Z", "Cape Verde", "Saudi Arabia"], [66, "2026-06-27T00:00:00Z", "Uruguay", "Spain"]], "I": [[17, "2026-06-16T19:00:00Z", "France", "Senegal"], [18, "2026-06-16T22:00:00Z", "Iraq", "Norway"], [42, "2026-06-22T21:00:00Z", "France", "Iraq"], [41, "2026-06-23T00:00:00Z", "Norway", "Senegal"], [61, "2026-06-26T19:00:00Z", "Norway", "France"], [62, "2026-06-26T19:00:00Z", "Senegal", "Iraq"]], "J": [[19, "2026-06-17T01:00:00Z", "Argentina", "Algeria"], [20, "2026-06-17T04:00:00Z", "Austria", "Jordan"], [43, "2026-06-22T17:00:00Z", "Argentina", "Austria"], [44, "2026-06-23T03:00:00Z", "Jordan", "Algeria"], [69, "2026-06-28T02:00:00Z", "Algeria", "Austria"], [70, "2026-06-28T02:00:00Z", "Jordan", "Argentina"]], "K": [[23, "2026-06-17T17:00:00Z", "Portugal", "DR Congo"], [24, "2026-06-18T02:00:00Z", "Uzbekistan", "Colombia"], [47, "2026-06-23T17:00:00Z", "Portugal", "Uzbekistan"], [48, "2026-06-24T02:00:00Z", "Colombia", "DR Congo"], [71, "2026-06-27T23:30:00Z", "Colombia", "Portugal"], [72, "2026-06-27T23:30:00Z", "DR Congo", "Uzbekistan"]], "L": [[22, "2026-06-17T20:00:00Z", "England", "Croatia"], [21, "2026-06-17T23:00:00Z", "Ghana", "Panama"], [45, "2026-06-23T20:00:00Z", "England", "Ghana"], [46, "2026-06-23T23:00:00Z", "Panama", "Croatia"], [67, "2026-06-27T21:00:00Z", "Panama", "England"], [68, "2026-06-27T21:00:00Z", "Croatia", "Ghana"]]};
+// fixtures: [matchNumber, utcISO, home, away, city] — real schedule, kickoff in UTC
+const FIX = {"A":[[1,"2026-06-11T19:00:00Z","Mexico","South Africa","Mexico City"],[2,"2026-06-12T02:00:00Z","South Korea","Czechia","Guadalajara"],[25,"2026-06-18T16:00:00Z","Czechia","South Africa","Atlanta"],[28,"2026-06-19T01:00:00Z","Mexico","South Korea","Guadalajara"],[53,"2026-06-25T01:00:00Z","Czechia","Mexico","Mexico City"],[54,"2026-06-25T01:00:00Z","South Africa","South Korea","Monterrey"]],"B":[[3,"2026-06-12T19:00:00Z","Canada","Bosnia & H.","Toronto"],[8,"2026-06-13T19:00:00Z","Qatar","Switzerland","San Francisco"],[26,"2026-06-18T19:00:00Z","Switzerland","Bosnia & H.","Los Angeles"],[27,"2026-06-18T22:00:00Z","Canada","Qatar","Vancouver"],[51,"2026-06-24T19:00:00Z","Switzerland","Canada","Vancouver"],[52,"2026-06-24T19:00:00Z","Bosnia & H.","Qatar","Seattle"]],"C":[[7,"2026-06-13T22:00:00Z","Brazil","Morocco","New York"],[5,"2026-06-14T01:00:00Z","Haiti","Scotland","Boston"],[30,"2026-06-19T22:00:00Z","Scotland","Morocco","Boston"],[29,"2026-06-20T01:00:00Z","Brazil","Haiti","Philadelphia"],[49,"2026-06-24T22:00:00Z","Scotland","Brazil","Miami"],[50,"2026-06-24T22:00:00Z","Morocco","Haiti","Atlanta"]],"D":[[4,"2026-06-13T01:00:00Z","USA","Paraguay","Los Angeles"],[6,"2026-06-14T04:00:00Z","Australia","Türkiye","Vancouver"],[32,"2026-06-19T19:00:00Z","USA","Australia","Seattle"],[31,"2026-06-20T04:00:00Z","Türkiye","Paraguay","San Francisco"],[59,"2026-06-26T02:00:00Z","Türkiye","USA","Los Angeles"],[60,"2026-06-26T02:00:00Z","Paraguay","Australia","San Francisco"]],"E":[[10,"2026-06-14T17:00:00Z","Germany","Curaçao","Houston"],[9,"2026-06-14T23:00:00Z","Ivory Coast","Ecuador","Philadelphia"],[33,"2026-06-20T20:00:00Z","Germany","Ivory Coast","Toronto"],[34,"2026-06-21T00:00:00Z","Ecuador","Curaçao","Kansas City"],[55,"2026-06-25T20:00:00Z","Curaçao","Ivory Coast","Philadelphia"],[56,"2026-06-25T20:00:00Z","Ecuador","Germany","New York"]],"F":[[11,"2026-06-14T20:00:00Z","Netherlands","Japan","Dallas"],[12,"2026-06-15T02:00:00Z","Sweden","Tunisia","Monterrey"],[35,"2026-06-20T17:00:00Z","Netherlands","Sweden","Houston"],[36,"2026-06-21T04:00:00Z","Tunisia","Japan","Monterrey"],[57,"2026-06-25T23:00:00Z","Japan","Sweden","Dallas"],[58,"2026-06-25T23:00:00Z","Tunisia","Netherlands","Kansas City"]],"G":[[16,"2026-06-15T19:00:00Z","Belgium","Egypt","Seattle"],[15,"2026-06-16T01:00:00Z","Iran","New Zealand","Los Angeles"],[39,"2026-06-21T19:00:00Z","Belgium","Iran","Los Angeles"],[40,"2026-06-22T01:00:00Z","New Zealand","Egypt","Vancouver"],[63,"2026-06-27T03:00:00Z","Egypt","Iran","Seattle"],[64,"2026-06-27T03:00:00Z","New Zealand","Belgium","Vancouver"]],"H":[[14,"2026-06-15T16:00:00Z","Spain","Cape Verde","Atlanta"],[13,"2026-06-15T22:00:00Z","Saudi Arabia","Uruguay","Miami"],[38,"2026-06-21T16:00:00Z","Spain","Saudi Arabia","Atlanta"],[37,"2026-06-21T22:00:00Z","Uruguay","Cape Verde","Miami"],[65,"2026-06-27T00:00:00Z","Cape Verde","Saudi Arabia","Houston"],[66,"2026-06-27T00:00:00Z","Uruguay","Spain","Guadalajara"]],"I":[[17,"2026-06-16T19:00:00Z","France","Senegal","New York"],[18,"2026-06-16T22:00:00Z","Iraq","Norway","Boston"],[42,"2026-06-22T21:00:00Z","France","Iraq","Philadelphia"],[41,"2026-06-23T00:00:00Z","Norway","Senegal","New York"],[61,"2026-06-26T19:00:00Z","Norway","France","Boston"],[62,"2026-06-26T19:00:00Z","Senegal","Iraq","Toronto"]],"J":[[19,"2026-06-17T01:00:00Z","Argentina","Algeria","Kansas City"],[20,"2026-06-17T04:00:00Z","Austria","Jordan","San Francisco"],[43,"2026-06-22T17:00:00Z","Argentina","Austria","Dallas"],[44,"2026-06-23T03:00:00Z","Jordan","Algeria","San Francisco"],[69,"2026-06-28T02:00:00Z","Algeria","Austria","Kansas City"],[70,"2026-06-28T02:00:00Z","Jordan","Argentina","Dallas"]],"K":[[23,"2026-06-17T17:00:00Z","Portugal","DR Congo","Houston"],[24,"2026-06-18T02:00:00Z","Uzbekistan","Colombia","Mexico City"],[47,"2026-06-23T17:00:00Z","Portugal","Uzbekistan","Houston"],[48,"2026-06-24T02:00:00Z","Colombia","DR Congo","Guadalajara"],[71,"2026-06-27T23:30:00Z","Colombia","Portugal","Miami"],[72,"2026-06-27T23:30:00Z","DR Congo","Uzbekistan","Atlanta"]],"L":[[22,"2026-06-17T20:00:00Z","England","Croatia","Dallas"],[21,"2026-06-17T23:00:00Z","Ghana","Panama","Toronto"],[45,"2026-06-23T20:00:00Z","England","Ghana","Boston"],[46,"2026-06-23T23:00:00Z","Panama","Croatia","Toronto"],[67,"2026-06-27T21:00:00Z","Panama","England","New York"],[68,"2026-06-27T21:00:00Z","Croatia","Ghana","Philadelphia"]]};
 
 // official FIFA Annex C third-place allocation.
 // key = the 8 qualifying groups (sorted); value = group whose 3rd-placed team
@@ -435,12 +434,18 @@ function groupsComplete(){
 function groupRevealed(g){
   return standings(g).every(r => r.P >= 1);
 }
+function groupsRevealed(){
+  for(const g in GROUPS) if(!groupRevealed(g)) return false;
+  return true;
+}
 
 /* ----- third-place qualifiers + official allocation ----- */
 let THIRDS = {};   // match number -> qualified third team (recomputed each render)
 function computeThirds(){
   THIRDS = {};
-  if(!groupsComplete()) return;
+  // provisional once every group has played its opening round (each team 1 game);
+  // updates live and settles when the groups finish
+  if(!groupsRevealed()) return;
   // rank all 12 third-placed teams; best 8 qualify
   const thirds = [];
   for(const g in GROUPS){ const s = standings(g); thirds.push(Object.assign({g}, s[2])); }
@@ -515,13 +520,13 @@ function renderGroups(){
         <td>${r.GD>0?"+":""}${r.GD}</td><td class="pts">${r.Pts}</td></tr>`;
     }).join("");
     const fixes = FIX[g].map(fx=>{
-      const [no,iso,home,away] = fx;
+      const [no,iso,home,away,city] = fx;
       const r = state.group[no] || {a:"",b:""};
       const off = dayOffset(iso);
       const cls = off===0?"today":off===1?"tomorrow":"";
       const chip = off===0?`<span class="chip">today</span>`:off===1?`<span class="chip">tomorrow</span>`:"";
       return `<div class="fix ${cls}">
-        <div class="when">${fmtWhen(iso)} ${chip}</div>
+        <div class="when">${fmtWhen(iso)} ${chip}<span class="city">${city}</span></div>
         <div class="match">
           <span class="home"><span class="nm">${home}</span><span class="flag">${FLAG[home]||""}</span></span>
           <span class="score">
