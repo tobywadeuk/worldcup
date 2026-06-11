@@ -60,8 +60,7 @@
   /* ---------- header banner ---------- */
   .banner {
     position: relative; overflow: hidden;
-    display: flex; align-items: flex-end; justify-content: space-between;
-    gap: 18px; flex-wrap: wrap;
+    display: flex; flex-direction: column; gap: 4px;
     padding: 20px 24px; margin-bottom: 22px;
     border: 1px solid var(--rule); border-radius: var(--radius);
     box-shadow: var(--card-shadow);
@@ -82,8 +81,12 @@
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .title h1 .trophy { filter: saturate(1.05); }
+  .banner-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap;
+  }
   /* host-nation flags woven into the banner as a low-opacity watermark */
-  .banner > .title, .banner > .tools { position: relative; z-index: 1; }
+  .banner-top, .statuspill { position: relative; z-index: 1; }
   .hostflags {
     position: absolute; top: -16px; right: -8px; z-index: 0;
     font-size: 96px; line-height: 1; letter-spacing: 4px;
@@ -96,7 +99,9 @@
     font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2px;
     color: var(--ink-muted); background: var(--bg);
     border: 1px solid var(--rule); border-radius: 999px;
-    padding: 3px 11px 3px 9px; vertical-align: middle;
+    padding: 3px 11px 3px 9px;
+    /* centred on its own row, beneath the title and tools */
+    align-self: center; margin-top: 8px;
   }
   .statuspill .dot {
     width: 7px; height: 7px; border-radius: 50%; background: var(--win);
@@ -272,16 +277,17 @@
 <div class="wrap">
   <header class="banner">
     <div class="hostflags" aria-hidden="true">🇨🇦🇲🇽🇺🇸</div>
-    <div class="title">
-      <h1><span class="trophy">🏆</span> World Cup 2026 Wall Chart
-        <span class="statuspill" id="statusPill"><span class="dot"></span><span class="txt"></span></span>
-      </h1>
+    <div class="banner-top">
+      <div class="title">
+        <h1><span class="trophy">🏆</span> World Cup 2026 Wall Chart</h1>
+      </div>
+      <div class="tools">
+        <button class="tool" id="themeBtn">◐ theme</button>
+        <button class="tool" id="exportBtn">⤓ export</button>
+        <button class="tool" id="resetBtn">↺ reset</button>
+      </div>
     </div>
-    <div class="tools">
-      <button class="tool" id="themeBtn">◐ theme</button>
-      <button class="tool" id="exportBtn">⤓ export</button>
-      <button class="tool" id="resetBtn">↺ reset</button>
-    </div>
+    <span class="statuspill" id="statusPill"><span class="dot"></span><span class="txt"></span></span>
   </header>
 
   <div class="legend">
