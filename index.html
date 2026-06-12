@@ -269,17 +269,6 @@
     font-weight: 600; pointer-events: none; cursor: default;
   }
   .fix.confirmed .chip { background: var(--win); color: var(--paper); }
-  .fix .pred-row {
-    display: flex; align-items: center; gap: 5px; margin-top: 2px;
-    font-family: 'DM Mono', monospace; font-size: 9px; color: var(--ink-faint);
-  }
-  .pts-badge {
-    font-size: 8px; font-weight: 600; padding: 1px 5px; border-radius: 999px;
-    font-family: 'DM Mono', monospace;
-  }
-  .pts-badge.p3 { background: var(--win); color: #fff; }
-  .pts-badge.p1 { background: var(--accent); color: #fff; }
-  .pts-badge.p0 { background: var(--ink-faint); color: #fff; }
 
   /* qualification markers */
   .stand .qs { font-size: 9px; flex-shrink: 0; }
@@ -408,7 +397,8 @@ const ROUNDS = [
 const CONFIRMED = {
   group: {
     1: {a:"2",b:"0"},  // Mexico 2–0 South Africa
-    2: {a:"2",b:"1"}   // South Korea 2–1 Czechia
+    2: {a:"2",b:"1"},  // South Korea 2–1 Czechia
+    3: {a:"1",b:"1"}   // Canada 1–1 Bosnia & H.
   }
 };
 
@@ -426,15 +416,6 @@ function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
 
 // CONFIRMED overrides user predictions for standings and display.
 function getMatchResult(no){ return CONFIRMED.group[no] || state.group[no] || null; }
-
-// Prediction score vs confirmed result: 3=exact, 1=right outcome, 0=wrong, null=no prediction.
-function predScore(conf, pred){
-  if(!pred || pred.a===""||pred.b===""||pred.a==null||pred.b==null) return null;
-  const ca=+conf.a,cb=+conf.b,pa=+pred.a,pb=+pred.b;
-  if(ca===pa && cb===pb) return 3;
-  const co=ca>cb?'h':ca<cb?'a':'d', po=pa>pb?'h':pa<pb?'a':'d';
-  return co===po ? 1 : 0;
-}
 
 // Short team abbreviation for compact displays.
 function abbr(name){
@@ -612,15 +593,6 @@ function renderGroups(){
       const chip = conf?`<span class="chip">final</span>`:off===0?`<span class="chip">today</span>`:off===1?`<span class="chip">tomorrow</span>`:"";
       const va = conf?conf.a:r.a, vb = conf?conf.b:r.b;
       const locked = conf?"disabled":"";
-      let predRow = "";
-      if(conf){
-        const pts = predScore(conf, r);
-        if(pts!==null){
-          const bc = pts===3?'p3':pts===1?'p1':'p0';
-          const bl = pts===3?'+3 exact':pts===1?'+1 outcome':'+0';
-          predRow = `<div class="pred-row">pick ${r.a}–${r.b} · <span class="pts-badge ${bc}">${bl}</span></div>`;
-        }
-      }
       return `<div class="fix ${fixCls}">
         <div class="when">${fmtWhen(iso)} ${chip}<span class="city">${city}</span></div>
         <div class="match">
@@ -631,7 +603,7 @@ function renderGroups(){
             <input class="sc" type="number" min="0" inputmode="numeric" data-gm="${no}" data-side="b" value="${vb}" ${locked}>
           </span>
           <span class="away"><span class="flag">${FLAG[away]||""}</span><span class="nm">${away}</span></span>
-        </div>${predRow}
+        </div>
       </div>`;
     }).join("");
     card.innerHTML = `
