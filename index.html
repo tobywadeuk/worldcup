@@ -256,11 +256,13 @@
   }
   .today-bar .meta-status { color: var(--ink-muted); white-space: nowrap; }
   .today-bar .tb-game {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: var(--paper); border: 1px solid var(--rule); border-radius: 999px;
-    padding: 4px 12px; color: var(--ink-muted); white-space: nowrap;
+    display: inline-flex; flex-direction: column; align-items: center;
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 14px;
+    padding: 4px 12px; color: var(--ink-muted); white-space: nowrap; gap: 1px;
   }
+  .today-bar .tb-game .tb-main { display: flex; align-items: center; gap: 4px; }
   .today-bar .tb-game .tb-sc { font-weight: 600; color: var(--ink); }
+  .today-bar .tb-game .tb-cd { font-size: 9px; color: var(--ink-faint); line-height: 1; }
   .today-bar .tb-game.done { border-color: color-mix(in srgb, var(--win) 45%, transparent); }
 
   /* confirmed fixture */
@@ -269,6 +271,12 @@
     font-weight: 600; pointer-events: none; cursor: default;
   }
   .fix.confirmed .chip { background: var(--win); color: var(--paper); }
+
+  /* KO tie date/venue line */
+  .tie .mwhen {
+    font-family: 'DM Mono', monospace; font-size: 7.5px; color: var(--ink-faint);
+    text-align: center; margin-bottom: 3px; letter-spacing: .3px;
+  }
 
   /* qualification markers */
   .stand .qs { font-size: 9px; flex-shrink: 0; }
@@ -391,6 +399,42 @@ const ROUNDS = [
   {label:"Semi-finals", ms:[101,102]},
   {label:"Final", ms:[104]}
 ];
+
+// KO match schedule — date/time (UTC) and host city for every knockout tie.
+const KO_META = {
+  73:{iso:"2026-06-28T19:00:00Z",city:"Los Angeles"},
+  74:{iso:"2026-06-29T20:30:00Z",city:"Boston"},
+  75:{iso:"2026-06-30T01:00:00Z",city:"Monterrey"},
+  76:{iso:"2026-06-29T17:00:00Z",city:"Houston"},
+  77:{iso:"2026-06-30T21:00:00Z",city:"New York"},
+  78:{iso:"2026-06-30T17:00:00Z",city:"Dallas"},
+  79:{iso:"2026-07-01T01:00:00Z",city:"Mexico City"},
+  80:{iso:"2026-07-01T16:00:00Z",city:"Atlanta"},
+  81:{iso:"2026-07-02T00:00:00Z",city:"San Francisco"},
+  82:{iso:"2026-07-01T20:00:00Z",city:"Seattle"},
+  83:{iso:"2026-07-02T23:00:00Z",city:"Toronto"},
+  84:{iso:"2026-07-02T19:00:00Z",city:"Los Angeles"},
+  85:{iso:"2026-07-03T03:00:00Z",city:"Vancouver"},
+  86:{iso:"2026-07-03T22:00:00Z",city:"Miami"},
+  87:{iso:"2026-07-04T01:30:00Z",city:"Kansas City"},
+  88:{iso:"2026-07-03T18:00:00Z",city:"Dallas"},
+  89:{iso:"2026-07-04T21:00:00Z",city:"Philadelphia"},
+  90:{iso:"2026-07-04T17:00:00Z",city:"Houston"},
+  91:{iso:"2026-07-05T20:00:00Z",city:"New York"},
+  92:{iso:"2026-07-06T00:00:00Z",city:"Mexico City"},
+  93:{iso:"2026-07-06T19:00:00Z",city:"Dallas"},
+  94:{iso:"2026-07-07T00:00:00Z",city:"Seattle"},
+  95:{iso:"2026-07-07T16:00:00Z",city:"Atlanta"},
+  96:{iso:"2026-07-07T20:00:00Z",city:"Vancouver"},
+  97:{iso:"2026-07-09T20:00:00Z",city:"Boston"},
+  98:{iso:"2026-07-10T19:00:00Z",city:"Los Angeles"},
+  99:{iso:"2026-07-11T21:00:00Z",city:"Miami"},
+  100:{iso:"2026-07-12T01:00:00Z",city:"Kansas City"},
+  101:{iso:"2026-07-14T19:00:00Z",city:"Dallas"},
+  102:{iso:"2026-07-15T19:00:00Z",city:"Atlanta"},
+  103:{iso:"2026-07-18T21:00:00Z",city:"Miami"},
+  104:{iso:"2026-07-19T19:00:00Z",city:"New York"}
+};
 
 // Official confirmed results — extend as the tournament progresses.
 // key = match number (string or number), value = {a, b} final score.
@@ -555,6 +599,41 @@ function dayOffset(iso){
   const b = new Date(n.getFullYear(),n.getMonth(),n.getDate());
   return Math.round((a-b)/86400000);
 }
+function fmtKoShort(iso){
+  const d = new Date(iso);
+  return d.getDate() + ' ' + MON[d.getMonth()] + ' · ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function fmtCountdown(ms){
+  if(ms<=0) return 'now';
+  const m=Math.floor(ms/60000), h=Math.floor(m/60), dy=Math.floor(h/24);
+  if(dy>=2) return dy+'d '+( h%24)+'h';
+  if(h>=1)  return h+'h '+(m%60)+'m';
+  return m+'m';
+}
+function getNextUnplayed(){
+  const now = new Date(); let best = null;
+  for(const g in GROUPS){
+    FIX[g].forEach(fx => {
+      if(CONFIRMED.group[fx[0]]) return;
+      const r = state.group[fx[0]];
+      if(r && r.a!=='' && r.b!=='') return;
+      const t = new Date(fx[1]);
+      if(t<=now) return;
+      if(!best||t<best.t) best={t, home:fx[2], away:fx[3]};
+    });
+  }
+  for(const m in KO_META){
+    const r = state.ko[m];
+    if(r && r.a!=='' && r.b!=='') continue;
+    const t = new Date(KO_META[m].iso);
+    if(t<=now) continue;
+    if(!best||t<best.t){
+      const M=KO[m]; if(!M) continue;
+      best={t, home:resolveSource(M.a)||null, away:resolveSource(M.b)||null};
+    }
+  }
+  return best;
+}
 
 /* ============================================================
    RENDER
@@ -644,7 +723,9 @@ function tieEl(m){
   const w = koWinner(m);
   const el = document.createElement("div");
   el.className = "tie";
-  el.innerHTML = `<div class="mno">Match ${m}</div>`;
+  const meta = KO_META[m];
+  el.innerHTML = `<div class="mno">Match ${m}</div>${meta?`<div class="mwhen">${fmtKoShort(meta.iso)} · ${meta.city}</div>`:''}`;
+
   el.appendChild(slotEl(m,'a',M.a,ta,w));
   el.appendChild(slotEl(m,'b',M.b,tb,w));
   const r = state.ko[m];
@@ -730,8 +811,23 @@ function renderTodayBar(){
     if(conf){ mid=`${conf.a}–${conf.b}`; done=true; }
     else if(r&&r.a!==''&&r.b!=='') mid=`${r.a}–${r.b}`;
     else{ const d=new Date(iso); mid=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
-    return `<span class="tb-game${done?' done':''}">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}</span>`;
+    let cdStr = '';
+    if(!done && !(r&&r.a!==''&&r.b!=='')){
+      const diff = new Date(iso) - new Date();
+      if(diff > 0) cdStr = 'in ' + fmtCountdown(diff);
+    }
+    return `<span class="tb-game${done?' done':''}"><span class="tb-main">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}</span>${cdStr?`<span class="tb-cd">${cdStr}</span>`:''}</span>`;
   }).join('');
+  // countdown only when no games today
+  if(!champ && !games.length){
+    const nx = getNextUnplayed();
+    if(nx){
+      const diff = nx.t - new Date();
+      const hA = nx.home?abbr(nx.home):'?', aA = nx.away?abbr(nx.away):'?';
+      const hF = nx.home?FLAG[nx.home]||'':'', aF = nx.away?FLAG[nx.away]||'':'';
+      label += ` · ${hF}${hA} v ${aA}${aF} in ${fmtCountdown(diff)}`;
+    }
+  }
   bar.innerHTML = `<span class="meta-status">${label}${games.length?' ·':''}</span> ${chips}`;
 }
 
@@ -791,6 +887,7 @@ try {
   $("#tzline").textContent = "Kick-off times shown in your timezone (" + tz + ")";
 } catch(e){ $("#tzline").textContent = "Kick-off times shown in your local timezone"; }
 renderAll();
+setInterval(renderTodayBar, 60000); // keep countdown live
 </script>
 </body>
 </html>
