@@ -250,20 +250,26 @@
 
   /* today-bar / meta-right */
   .today-bar {
-    flex: 1; display: flex; flex-wrap: wrap; justify-content: center;
+    width: 100%; display: flex; flex-wrap: nowrap; justify-content: space-evenly;
     align-items: center; gap: 7px;
     font-family: 'DM Mono', monospace; font-size: 13.5px; color: var(--ink-faint);
   }
-  .today-bar .meta-status { color: var(--ink-muted); white-space: nowrap; }
+  .today-bar .meta-status { color: var(--ink-muted); white-space: nowrap; flex-shrink: 0; }
   .today-bar .tb-game {
-    display: inline-flex; flex-direction: column; align-items: center;
+    flex: 1; display: inline-flex; align-items: center; justify-content: center;
     background: var(--paper); border: 1px solid var(--rule); border-radius: 14px;
-    padding: 4px 12px; color: var(--ink-muted); white-space: nowrap; gap: 1px;
+    padding: 4px 12px; color: var(--ink-muted); white-space: nowrap;
   }
   .today-bar .tb-game .tb-main { display: flex; align-items: center; gap: 4px; }
   .today-bar .tb-game .tb-sc { font-weight: 600; color: var(--ink); }
-  .today-bar .tb-game .tb-cd { font-size: 9px; color: var(--ink-faint); line-height: 1; }
+  .today-bar .tb-game .tb-cd { font-size: 9px; color: var(--ink-faint); margin-left: 4px; }
   .today-bar .tb-game.done { border-color: color-mix(in srgb, var(--win) 45%, transparent); }
+
+  @media (max-width: 640px) {
+    .today-bar { flex-wrap: wrap; }
+    .today-bar .meta-status { width: 100%; text-align: center; }
+    .today-bar .tb-game { flex: 1 1 calc(50% - 8px); }
+  }
 
   /* confirmed fixture */
   .fix.confirmed input.sc {
@@ -291,14 +297,12 @@
       <h1><span class="trophy">🏆</span> World Cup 2026 Wall Chart</h1>
     </div>
     <div class="tools">
-      <button class="tool" id="themeBtn">◐ theme</button>
-      <button class="tool" id="exportBtn">⤓ export</button>
-      <button class="tool" id="resetBtn">↺ reset</button>
+      <button class="tool" id="themeBtn">◐</button>
+      <button class="tool" id="resetBtn">↺</button>
     </div>
   </header>
 
   <div class="meta-row">
-    <div class="tzline" id="tzline"></div>
     <div class="today-bar" id="todayBar"></div>
   </div>
 
@@ -440,9 +444,31 @@ const KO_META = {
 // key = match number (string or number), value = {a, b} final score.
 const CONFIRMED = {
   group: {
-    1: {a:"2",b:"0"},  // Mexico 2–0 South Africa
-    2: {a:"2",b:"1"},  // South Korea 2–1 Czechia
-    3: {a:"1",b:"1"}   // Canada 1–1 Bosnia & H.
+    1:  {a:"2",b:"0"},  // Mexico 2–0 South Africa
+    2:  {a:"2",b:"1"},  // South Korea 2–1 Czechia
+    3:  {a:"1",b:"1"},  // Canada 1–1 Bosnia & H.
+    4:  {a:"4",b:"1"},  // USA 4–1 Paraguay
+    5:  {a:"0",b:"1"},  // Haiti 0–1 Scotland
+    6:  {a:"2",b:"0"},  // Australia 2–0 Türkiye
+    7:  {a:"1",b:"1"},  // Brazil 1–1 Morocco
+    8:  {a:"1",b:"1"},  // Qatar 1–1 Switzerland
+    9:  {a:"1",b:"0"},  // Ivory Coast 1–0 Ecuador
+    10: {a:"7",b:"1"},  // Germany 7–1 Curaçao
+    11: {a:"2",b:"2"},  // Netherlands 2–2 Japan
+    12: {a:"5",b:"1"},  // Sweden 5–1 Tunisia
+    13: {a:"1",b:"1"},  // Saudi Arabia 1–1 Uruguay
+    14: {a:"0",b:"0"},  // Spain 0–0 Cape Verde
+    15: {a:"2",b:"2"},  // Iran 2–2 New Zealand
+    16: {a:"1",b:"1"},  // Belgium 1–1 Egypt
+    17: {a:"3",b:"1"},  // France 3–1 Senegal
+    18: {a:"1",b:"4"},  // Iraq 1–4 Norway
+    19: {a:"3",b:"0"},  // Argentina 3–0 Algeria
+    20: {a:"3",b:"1"},  // Austria 3–1 Jordan
+    21: {a:"1",b:"0"},  // Ghana 1–0 Panama
+    22: {a:"4",b:"2"},  // England 4–2 Croatia
+    23: {a:"1",b:"1"},  // Portugal 1–1 DR Congo
+    24: {a:"1",b:"3"},  // Uzbekistan 1–3 Colombia
+    25: {a:"1",b:"1"},  // Czechia 1–1 South Africa
   }
 };
 
@@ -803,6 +829,7 @@ function renderTodayBar(){
   // today's games
   const games = [];
   for(const g in GROUPS) FIX[g].forEach(fx => { if(dayOffset(fx[1])===0) games.push(fx); });
+  games.sort((a, b) => new Date(a[1]) - new Date(b[1]));
   const chips = games.map(fx => {
     const [no,iso,home,away] = fx;
     const conf = CONFIRMED.group[no], r = state.group[no];
@@ -816,7 +843,7 @@ function renderTodayBar(){
       const diff = new Date(iso) - new Date();
       if(diff > 0) cdStr = 'in ' + fmtCountdown(diff);
     }
-    return `<span class="tb-game${done?' done':''}"><span class="tb-main">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}</span>${cdStr?`<span class="tb-cd">${cdStr}</span>`:''}</span>`;
+    return `<span class="tb-game${done?' done':''}"><span class="tb-main">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}${cdStr?` <span class="tb-cd">${cdStr}</span>`:''}</span></span>`;
   }).join('');
   // countdown only when no games today
   if(!champ && !games.length){
@@ -869,23 +896,12 @@ $("#resetBtn").onclick = () => {
     save(); renderAll();
   }
 };
-$("#exportBtn").onclick = () => {
-  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "world-cup-2026-wallchart.json"; a.click();
-  URL.revokeObjectURL(url);
-};
 
 /* ============================================================
    BOOT
    ============================================================ */
 document.body.classList.toggle("theme-dark", state.theme==="dark");
 
-try {
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local time";
-  $("#tzline").textContent = "Kick-off times shown in your timezone (" + tz + ")";
-} catch(e){ $("#tzline").textContent = "Kick-off times shown in your local timezone"; }
 renderAll();
 setInterval(renderTodayBar, 60000); // keep countdown live
 </script>
