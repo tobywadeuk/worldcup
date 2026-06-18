@@ -287,6 +287,36 @@
   /* qualification markers */
   .stand .qs { font-size: 9px; flex-shrink: 0; }
   .stand tr.q-out > td { opacity: .42; }
+
+  /* fixture preview */
+  .fix.has-preview { cursor: pointer; }
+  .fix.has-preview:hover { background: var(--bg-2); border-radius: 6px; }
+  #prevModal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(7,16,31,.7); backdrop-filter:blur(4px); overflow-y:auto; padding:24px 12px 48px; box-sizing:border-box; }
+  .prev-box { background:var(--paper); max-width:660px; margin:0 auto; border-radius:14px; overflow:hidden; position:relative; box-shadow:0 24px 60px rgba(0,0,0,.4); }
+  .prev-hd { background:var(--ink); padding:20px 52px 16px 24px; }
+  .prev-tag { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:7px; }
+  .prev-matchup { font-size:21px; font-weight:700; color:#fff; line-height:1.2; }
+  .prev-fm { font-size:11px; color:var(--ink-faint); margin-top:6px; }
+  .prev-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:22px; color:var(--ink-faint); cursor:pointer; line-height:1; padding:4px 6px; z-index:2; }
+  .prev-close:hover { color:#fff; }
+  .prev-xi { display:flex; gap:16px; padding:14px 24px; border-bottom:1px solid var(--rule); }
+  .prev-xi-col { flex:1; }
+  .prev-xi-lbl { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-muted); margin-bottom:6px; }
+  .prev-xi-names { font-size:12px; color:var(--ink); line-height:1.8; }
+  .prev-sec { padding:14px 24px; border-bottom:1px solid var(--rule); }
+  .prev-sec:last-of-type { border-bottom:none; }
+  .prev-sec-hd { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); font-weight:700; margin-bottom:8px; }
+  .prev-sec p { font-size:13px; color:var(--ink); line-height:1.65; margin:0; }
+  .pw-list { list-style:none; padding:0; margin:0; }
+  .pw-list li { padding:7px 0; border-bottom:1px solid var(--rule); font-size:13px; color:var(--ink); line-height:1.5; }
+  .pw-list li:last-child { border-bottom:none; }
+  .pw-list strong { color:var(--ink); }
+  .pw-team { font-size:10px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-left:5px; vertical-align:1px; }
+  .prev-probs { display:flex; padding:14px 24px; border-bottom:1px solid var(--rule); }
+  .prev-prob { flex:1; text-align:center; }
+  .prev-prob .pp-val { font-size:26px; font-weight:700; color:var(--ink); }
+  .prev-prob .pp-lbl { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-muted); margin-top:3px; }
+  .prev-note { font-size:11px; color:var(--ink-faint); padding:10px 24px 18px; }
 </style>
 </head>
 <body>
@@ -312,6 +342,10 @@
   <div class="section-head"><h2>Knockouts</h2><div class="line"></div></div>
   <p class="hint" id="koHint"></p>
   <div class="bracket-scroll"><div class="bracket" id="bracket"></div></div>
+</div>
+
+<div id="prevModal">
+  <div class="prev-box" id="prevBox"></div>
 </div>
 
 <script>
@@ -469,6 +503,52 @@ const CONFIRMED = {
     23: {a:"1",b:"1"},  // Portugal 1–1 DR Congo
     24: {a:"1",b:"3"},  // Uzbekistan 1–3 Colombia
     25: {a:"1",b:"1"},  // Czechia 1–1 South Africa
+  }
+};
+
+/* ============================================================
+   MATCH PREVIEWS
+   ============================================================ */
+const PREVIEWS = {
+  26: {
+    group:"B", home:"Switzerland", away:"Bosnia & H.",
+    formation:{ home:"4-2-3-1", away:"4-2-3-1" },
+    xi:{
+      home:["Kobel","Widmer","Akanji","Elvedi","Rodriguez","Freuler","Xhaka","Ndoye","Aebischer","Vargas","Embolo"],
+      away:["Vasilj","Dedic","Muharemovic","Hadzikadunic","Kolasinac","Hadziahmetovic","Tahirovic","Memic","Demirovic","Alajbegovic","Dzeko"]
+    },
+    storyline:"All four Group B teams sit on one point after a chaotic matchday 1 — Switzerland snatched a 94th-minute equaliser in Monterrey when a Miro Muheim own goal gifted Qatar a share of the spoils; Bosnia conceded a late Canada equaliser in Dallas. For Edin Dzeko — 39 years old and almost certainly playing his final World Cup — this is one of the last great acts in a career that defined a generation of Bosnian football. Both sides know a win today takes near-total control of the group.",
+    tactical:"Switzerland sit in a compact 4-2-3-1 with Granit Xhaka anchoring deep and Remo Freuler covering the ground alongside him. Width comes from Ndoye and Vargas; Embolo is the physical reference up front. Bosnia will try to bypass midfield quickly — long balls for Dzeko to hold, wide runners in Alajbegovic and Bajraktarevic tasked with isolating the Swiss full-backs. Key matchup: Manuel Akanji vs Dzeko in the air. If Xhaka keeps Bosnia narrow, Switzerland have the quality to hurt them on the counter.",
+    watch:[
+      {name:"Granit Xhaka",team:"Switzerland",text:"Captain, record cap-holder, and the manager's right-hand man. Reads the game better than almost anyone at this tournament and dictates tempo from deep at Sunderland."},
+      {name:"Breel Embolo",team:"Switzerland",text:"Scored vs Qatar from the spot in matchday 1. Has reinvented himself at Rennes — more composed, less wasted effort — and is the Swiss focal point up front."},
+      {name:"Edin Dzeko",team:"Bosnia & H.",text:"The greatest player his country has produced. At 39 this is the final chapter — Man City, Roma, Inter, Schalke, now the World Cup stage one last time. Every touch matters."},
+      {name:"Ermedin Demirovic",team:"Bosnia & H.",text:"Presses from the front and scores. Jokingly promised his Stuttgart squad he'd buy them all beer when they qualified — a man who delivers on promises."},
+      {name:"Kerim Alajbegovic",team:"Bosnia & H.",text:"22-year-old winger at Bayer Leverkusen already drawing comparison with the best in Europe. The face of Bosnia's next generation — and a serious problem for Ricardo Rodriguez."},
+      {name:"Manuel Akanji",team:"Switzerland",text:"Champions League winner at Inter, Premier League winner at Man City. One of Europe's elite centre-backs and the defensive leader who must handle Dzeko's physical threat."}
+    ],
+    importance:"Switzerland win = top of Group B heading into MD3. Bosnia win = they take control and Dzeko's valedictory run continues. A draw leaves everything open for the final round — but with four teams on two points each, goal difference could decide everything.",
+    probs:{h:42,d:28,a:30}
+  },
+  27: {
+    group:"B", home:"Canada", away:"Qatar",
+    formation:{ home:"4-3-3", away:"4-3-3" },
+    xi:{
+      home:["St Clair","Johnston","Cornelius","Bombito","Davies","Eustáquio","Koné","Osorio","Buchanan","David","Larin"],
+      away:["Abunada","Pedro Miguel","Mendes","Sultan Al-Brake","Hatem","Gaber","Madibo","Boudiaf","Afif","Almoez Ali","Edmilson Junior"]
+    },
+    storyline:"Canada's golden generation — Alphonso Davies, Jonathan David, Tajon Buchanan — are finally here at their own World Cup after 40 years in the wilderness. They should have won against Bosnia in matchday 1 but conceded a last-minute equaliser. Qatar, coached by Julen Lopetegui — who lifted the 2010 World Cup with Spain — drew 1-1 with Switzerland in a nervy game decided by an own goal in the 94th minute. For the home crowd that will fill whatever venue this is played in, this is the moment the dream either ignites or starts to flicker.",
+    tactical:"Canada's biggest weapon is transition — Alphonso Davies bombing forward from left back, Buchanan cutting in from the right, Jonathan David peeling off into space. Stephen Eustáquio is the engine: ball-winner, distributor, relentless. Qatar under Lopetegui are disciplined and compact, with Akram Afif's movement the main creative outlet and Almoez Ali's penalty-box instincts the finishing threat. Key battle: Alistair Johnston vs Afif on the left channel. Canada must resist the temptation to overload and leave space in behind Davies's runs.",
+    watch:[
+      {name:"Jonathan David",team:"Canada",text:"\"The smartest player I've ever coached\" — Jesse Marsch. Just moved to Juventus after a prolific Ligue 1 run. Two-footed, clinical, drags defenders out of shape before they realise it."},
+      {name:"Alphonso Davies",team:"Canada",text:"The superstar. Champions League winner at Bayern Munich. His pace going forward is lethal — but Canada need him disciplined when Qatar counter through Afif's channel."},
+      {name:"Stephen Eustáquio",team:"Canada",text:"The heartbeat. Passionate leader and the competitive spine of this team. At Porto he's shown he can handle the biggest stages — this is another."},
+      {name:"Akram Afif",team:"Qatar",text:"Qatar's magician and talisman. Has been known to pull playing cards from his sleeve — the tricks on the pitch are even better. The most dangerous attacker in Group B after Davies."},
+      {name:"Almoez Ali",team:"Qatar",text:"All-time leading Qatar scorer and scored the fastest goal in Qatar Stars League history in 2025. Scored their only goal at 2022. Comes alive in the penalty area."},
+      {name:"Ismaël Koné",team:"Canada",text:"At his best he glides across midfield, finding space and leaving defenders in his wake. A move to Sassuolo confirms the upward trajectory — this is the stage where players like him make names."}
+    ],
+    importance:"Canada are co-hosts playing their first World Cup since 1986 — a win tonight all but guarantees progression and ignites an entire country. Qatar cannot afford to fall further behind the group: Lopetegui knows a defeat makes matchday 3 a must-win against Switzerland.",
+    probs:{h:48,d:27,a:25}
   }
 };
 
@@ -694,11 +774,11 @@ function renderGroups(){
       const r = state.group[no] || {a:"",b:""};
       const off = dayOffset(iso);
       const dayCls = off===0?"today":off===1?"tomorrow":"";
-      const fixCls = [dayCls, conf?"confirmed":""].filter(Boolean).join(' ');
+      const fixCls = [dayCls, conf?"confirmed":"", PREVIEWS[no]?"has-preview":""].filter(Boolean).join(' ');
       const chip = conf?`<span class="chip">final</span>`:off===0?`<span class="chip">today</span>`:off===1?`<span class="chip">tomorrow</span>`:"";
       const va = conf?conf.a:r.a, vb = conf?conf.b:r.b;
       const locked = conf?"disabled":"";
-      return `<div class="fix ${fixCls}">
+      return `<div class="fix ${fixCls}" data-no="${no}">
         <div class="when">${fmtWhen(iso)} ${chip}<span class="city">${city}</span></div>
         <div class="match">
           <span class="home"><span class="nm">${home}</span><span class="flag">${FLAG[home]||""}</span></span>
@@ -861,6 +941,64 @@ function renderTodayBar(){
 function renderAll(){ renderGroups(); renderBracket(); renderTodayBar(); }
 
 /* ============================================================
+   PREVIEW
+   ============================================================ */
+function showPreview(no){
+  const p = PREVIEWS[no];
+  if(!p) return;
+  const box = document.getElementById('prevBox');
+  const hF = FLAG[p.home]||'', aF = FLAG[p.away]||'';
+  const xiHTML = p.xi ? `<div class="prev-xi">
+    <div class="prev-xi-col">
+      <div class="prev-xi-lbl">${p.home} · ${p.formation.home}</div>
+      <div class="prev-xi-names">${p.xi.home.join('<br>')}</div>
+    </div>
+    <div class="prev-xi-col" style="text-align:right">
+      <div class="prev-xi-lbl">${p.away} · ${p.formation.away}</div>
+      <div class="prev-xi-names">${p.xi.away.join('<br>')}</div>
+    </div>
+  </div>` : '';
+  const probHTML = p.probs ? `<div class="prev-probs">
+    <div class="prev-prob"><div class="pp-val">${p.probs.h}%</div><div class="pp-lbl">${p.home}</div></div>
+    <div class="prev-prob"><div class="pp-val">${p.probs.d}%</div><div class="pp-lbl">Draw</div></div>
+    <div class="prev-prob"><div class="pp-val">${p.probs.a}%</div><div class="pp-lbl">${p.away}</div></div>
+  </div>` : '';
+  box.innerHTML = `
+    <button class="prev-close" onclick="closePrev()">✕</button>
+    <div class="prev-hd">
+      <div class="prev-tag">Group ${p.group} · Match ${no} · Preview</div>
+      <div class="prev-matchup">${hF} ${p.home} <span style="color:var(--ink-faint);font-weight:400">vs</span> ${p.away} ${aF}</div>
+      ${p.formation ? `<div class="prev-fm">${p.formation.home} &nbsp;·&nbsp; ${p.formation.away}</div>` : ''}
+    </div>
+    ${xiHTML}
+    <div class="prev-sec">
+      <div class="prev-sec-hd">The Storyline</div>
+      <p>${p.storyline}</p>
+    </div>
+    <div class="prev-sec">
+      <div class="prev-sec-hd">Tactical Battle</div>
+      <p>${p.tactical}</p>
+    </div>
+    <div class="prev-sec">
+      <div class="prev-sec-hd">Players to Watch</div>
+      <ul class="pw-list">${p.watch.map(w=>`<li><strong>${w.name}</strong><span class="pw-team">${w.team}</span> — ${w.text}</li>`).join('')}</ul>
+    </div>
+    <div class="prev-sec">
+      <div class="prev-sec-hd">What Each Team Needs</div>
+      <p>${p.importance}</p>
+    </div>
+    ${probHTML}
+    <div class="prev-note">★ Lineups are predicted, not confirmed. Win probabilities are synthesised estimates — not model outputs.</div>
+  `;
+  document.getElementById('prevModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+function closePrev(){
+  document.getElementById('prevModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+/* ============================================================
    EVENTS
    ============================================================ */
 document.addEventListener("input", e => {
@@ -881,7 +1019,16 @@ document.addEventListener("click", e => {
   if(e.target.dataset.pen!==undefined){
     state.pens[e.target.dataset.pen] = e.target.dataset.win;
     save(); rerender(renderBracket);
+    return;
   }
+  // fixture preview — click anywhere on row except score inputs
+  const fix = e.target.closest('.fix.has-preview');
+  if(fix && !e.target.closest('input')){
+    showPreview(+fix.dataset.no);
+    return;
+  }
+  // click modal backdrop to close
+  if(e.target.id === 'prevModal') closePrev();
 });
 
 $("#themeBtn").onclick = () => {
