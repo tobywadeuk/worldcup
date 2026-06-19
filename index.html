@@ -288,6 +288,54 @@
   .stand .qs { font-size: 9px; flex-shrink: 0; }
   .stand tr.q-out > td { opacity: .42; }
 
+  /* ---------- team-path modal ---------- */
+  .stand .nm[data-team] { cursor: pointer; }
+  .stand .nm[data-team]:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(7, 16, 31, 0.55); backdrop-filter: blur(3px);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: var(--radius); box-shadow: var(--card-shadow);
+    max-width: 560px; width: 100%; padding: 22px 22px 26px;
+    position: relative; animation: modalIn .22s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .modal-close {
+    position: absolute; top: 10px; right: 14px;
+    background: none; border: none; font-size: 24px; line-height: 1;
+    color: var(--ink-faint); cursor: pointer; transition: color .15s;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal .mt-head {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 23px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 3px;
+  }
+  .modal .mt-sub {
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .modal .scen { margin-top: 20px; }
+  .modal .scen-title {
+    font-family: 'DM Mono', monospace; font-size: 11.5px; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px;
+  }
+  .modal .scen-title b { color: var(--accent); }
+  .modal .opp-head { font-size: 13px; color: var(--ink-muted); margin: 6px 0 8px; line-height: 1.4; }
+  .modal .opp-head b { color: var(--ink); font-weight: 600; }
+  .modal table.stand.mini { margin-bottom: 12px; }
+  .modal table.stand.mini th.team-col { text-align: left; letter-spacing: .5px; }
+  .stand tr.hl td { background: color-mix(in srgb, var(--accent) 17%, transparent); }
+  .stand tr.hl td:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+  .stand tr.hl td:last-child { border-top-right-radius: 6px; border-bottom-right-radius: 6px; }
+  .stand tr.hl td.team-col .nm { font-weight: 600; }
+  .modal .nm[data-jump] { cursor: pointer; }
+  .modal .nm[data-jump]:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+
   /* fixture preview */
   .fix.has-preview { cursor: pointer; }
   .fix.has-preview:hover { background: var(--bg-2); border-radius: 6px; }
@@ -342,6 +390,13 @@
   <div class="section-head"><h2>Knockouts</h2><div class="line"></div></div>
   <p class="hint" id="koHint"></p>
   <div class="bracket-scroll"><div class="bracket" id="bracket"></div></div>
+</div>
+
+<div class="modal-backdrop" id="modalBack">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
 </div>
 
 <div id="prevModal">
@@ -510,6 +565,386 @@ const CONFIRMED = {
    MATCH PREVIEWS
    ============================================================ */
 const PREVIEWS = {
+  29: {
+    group:"C", home:"Brazil", away:"Haiti",
+    formation:{ home:"4-2-3-1", away:"5-3-2" },
+    xi:{
+      home:["Alisson","Danilo","Marquinhos","Gabriel Magalhães","Alex Sandro","Casemiro","Bruno Guimarães","Raphinha","Lucas Paquetá","Vinícius Júnior","Matheus Cunha"],
+      away:["Placide","Arcus","Adé","Delcroix","Thermoncy","Duverne","Jean Jacques","Bellegarde","Sainté","Pierrot","Isidor"]
+    },
+    storyline:"Carlo Ancelotti's Brazil opened with a flat 1-1 draw against Morocco — a result that landed less like a stumble and more like a warning, the five-time champions booed off by their own travelling support. Now they meet a Haiti side back at a World Cup for the first time since 1974, beaten only 1-0 by Scotland in a spirited opener that suggested they will not simply be passengers. For Brazil this is the game that should restore order: a chance for Vinícius and Raphinha to find rhythm and for Ancelotti to settle a team still searching for its identity under him. For Haiti — a nation that has endured gang violence, political collapse and natural disaster, their home federation unable to even host matches on Haitian soil — simply being here is the story. Anything they take from the world's most famous shirt would be history.",
+    tactical:"Brazil will dominate the ball and Haiti know it — expect Sébastien Migné's side to sit in a deep 5-3-2, packing the box and trusting Johny Placide to mop up crosses, springing Bellegarde and the two strikers on the counter. Brazil's threat comes from the left: Vinícius isolating Carlens Arcus one-on-one, Alex Sandro overlapping, Raphinha drifting in off the right to attack the back post. The key for Ancelotti is patience and tempo through Bruno Guimarães and Lucas Paquetá — if Brazil move the ball quickly they will eventually prise Haiti open; if they slow down and force it, Haiti's low block becomes a wall. Haiti's whole plan hinges on staying compact and surviving the first 60 minutes with the game scoreless.",
+    watch:[
+      {name:"Vinícius Júnior",team:"Brazil",text:"The Real Madrid winger is Brazil's matchwinner-in-chief, but endured a quiet night against Morocco. One-on-one against a tiring full-back, this is exactly the game for him to explode and silence the doubters."},
+      {name:"Raphinha",team:"Brazil",text:"Came of age as Brazil's leader and talisman through qualifying. Direct, relentless and a set-piece threat — if Vinícius is double-marked, Raphinha is the man who hurts Haiti from the other flank."},
+      {name:"Bruno Guimarães",team:"Brazil",text:"The Newcastle midfielder is the metronome who sets Brazil's rhythm. Against a deep block, his ability to pick the lock with a disguised pass is the difference between fluency and frustration."},
+      {name:"Jean-Ricner Bellegarde",team:"Haiti",text:"\"The Architect.\" The Wolves midfielder switched from France to Haiti and brings genuine Premier League quality — fast, fearless, able to spark a counterattack from nothing. Haiti's one true gamechanger."},
+      {name:"Wilson Isidor",team:"Haiti",text:"The Sunderland forward chose Haiti over France in March and scored on debut. Tall, quick and a predator on the turn — the kind of pedigree that can punish Brazil if they switch off at the back."},
+      {name:"Frantzdy Pierrot",team:"Haiti",text:"\"The Mountain.\" Averages a goal every 1.5 games for Haiti and makes headers feel inevitable. Against Marquinhos and Gabriel he is a constant aerial handful and Haiti's reference point up top."}
+    ],
+    importance:"Brazil drew their opener and cannot afford to drop more points — anything but a comfortable win here ramps the pressure on Ancelotti and leaves qualification from a tight group genuinely uncertain. Haiti, beaten by Scotland, are already up against it: another defeat all but ends their dream, but a draw against Brazil would be the result of their lives and blow Group C wide open.",
+    probs:{h:80,d:14,a:6}
+  },
+  31: {
+    group:"D", home:"Türkiye", away:"Paraguay",
+    formation:{ home:"4-2-3-1", away:"4-4-2" },
+    xi:{
+      home:["Gunok","Celik","Demiral","Akaydin","Kadioglu","Calhanoglu","Özcan","Akturkoglu","Arda Guler","Kenan Yildiz","Deniz Gul"],
+      away:["Fernández","Velázquez","Gustavo Gómez","Alderete","Junior Alonso","Almirón","Cubas","Diego Gómez","Sosa","Sanabria","Enciso"]
+    },
+    storyline:"Two teams that took a beating on matchday one meet in what is effectively a knockout tie. Vincenzo Montella's Türkiye — gifted, young and fancied as dark horses — were flat in a 2-0 loss to Australia, the talent of Arda Güler and Kenan Yıldız nowhere near enough. Paraguay were worse, dismantled 4-1 by the USA in a result that exposed every defensive frailty Gustavo Alfaro has spent two years trying to fix. Now both sit pointless, knowing defeat almost certainly ends their World Cup. It is a clash of styles and stakes: Turkish flair against Paraguayan grit, a generation of Real Madrid and Juventus academy graduates against a side built on Alfaro's siege mentality. Whoever blinks first goes home early.",
+    tactical:"Türkiye have the more gifted footballers and will see most of the ball, with Hakan Çalhanoğlu dropping deep to build and Arda Güler floating between the lines to feed Akturkoglu and Yıldız in the channels. Their problem is the same as against Australia: a lack of penetration and a high line that can be exposed in behind. That is exactly where Paraguay will look to strike — Alfaro sets up compact and direct, Diego Gómez and Andrés Cubas screening in front of the back four, Julio Enciso and the pace of Ramón Sosa and Almirón hunting transitions. The battle is Türkiye's patience and quality against Paraguay's organisation and counter-punch. If Türkiye force the tempo and move Paraguay's block side to side, Güler will find a gap; if they get sloppy, Enciso will make them pay.",
+    watch:[
+      {name:"Arda Güler",team:"Türkiye",text:"The Real Madrid playmaker is the jewel of Turkish football — a left foot that can unlock any defence. Quiet against Australia; Türkiye need him to take the game by the scruff of the neck."},
+      {name:"Kenan Yıldız",team:"Türkiye",text:"Juventus's rising star wears the No.10 with a swagger beyond his years. Direct, two-footed and fearless — the kind of player who thrives when the pressure is at its highest."},
+      {name:"Hakan Çalhanoğlu",team:"Türkiye",text:"The Inter midfielder is Türkiye's captain and tempo-setter, deadly from set pieces and the spot. His range of passing is the platform for everything Türkiye do going forward."},
+      {name:"Julio Enciso",team:"Paraguay",text:"Paraguay's top attacker and a moment of magic waiting to happen. The Strasbourg forward offers flair, dribbling and goals from nothing — exactly the gamebreaker Paraguay lacked against the USA."},
+      {name:"Diego Gómez",team:"Paraguay",text:"\"I'm a warrior — I never give up on the ball.\" The Brighton midfielder is Alfaro's engine, versatile across the middle and the heartbeat of Paraguay's pressing and transitions."},
+      {name:"Miguel Almirón",team:"Paraguay",text:"Reborn under Alfaro after years of criticism, the former Newcastle winger is Paraguay's counterattacking spearhead — pace, intensity and tactical discipline leading the break."}
+    ],
+    importance:"This is close to win-or-bust for both. Türkiye's talented generation cannot afford an 0-2 start that would leave qualification almost out of reach and pile scrutiny on Montella. Paraguay, already shipping four to the USA, know a second defeat ends their tournament — Alfaro's men must win to keep any hope of the knockouts alive. Expect tension, fouls and a game decided by fine margins.",
+    probs:{h:47,d:27,a:26}
+  },
+  33: {
+    group:"E", home:"Germany", away:"Ivory Coast",
+    formation:{ home:"4-2-3-1", away:"4-3-3" },
+    xi:{
+      home:["Neuer","Kimmich","Tah","Rüdiger","Raum","Pavlovic","Goretzka","Sané","Musiala","Wirtz","Havertz"],
+      away:["Fofana","Singo","Diomande","Ndicka","Konan","Séko Fofana","Sangaré","Kessié","Amad Diallo","Bonny","Adingra"]
+    },
+    storyline:"Top of the group meets top of the group. Germany announced themselves with a ruthless 7-1 dismantling of Curaçao — Florian Wirtz and Jamal Musiala pulling strings, the doubts about a 'not-yet-vintage' side temporarily silenced. Ivory Coast were less spectacular but just as effective, a disciplined 1-0 win over Ecuador showing off the settled defence that did not concede in qualifying. Both sit on three points; the winner takes a giant stride towards the last 16 and likely first place. For Emerse Faé's Elephants, this is a measuring stick against one of the tournament favourites; for Julian Nagelsmann, a chance to prove the Curaçao demolition was a statement, not a mirage against weak opposition.",
+    tactical:"Germany will dominate possession and look to manipulate Ivory Coast's block through the brilliance of Wirtz and Musiala between the lines, with Joshua Kimmich and Leon Goretzka controlling the platform and Leroy Sané stretching the pitch. The danger for Nagelsmann is the Elephants' transitions: Ivory Coast have genuine pace and power to break — Amad Diallo and Simon Adingra running in behind, Franck Kessié and Ibrahim Sangaré winning second balls, Wilfried Singo bombing forward from full-back. The pivotal duel is Germany's high line against Ivory Coast's runners; if Rüdiger and Tah hold firm Germany's quality should tell, but a settled Ivorian defence built around Ndicka and Diomande will not be easy to break down.",
+    watch:[
+      {name:"Florian Wirtz",team:"Germany",text:"Germany's creative heartbeat and the man Nagelsmann builds around. The Liverpool playmaker glides through midfield and was at the centre of the Curaçao rout — a nightmare for any defence to track."},
+      {name:"Jamal Musiala",team:"Germany",text:"Close control in a phone box and the ability to dribble out of trouble in the tightest spaces. When he and Wirtz click, Germany look like a side that can win the whole thing."},
+      {name:"Amad Diallo",team:"Ivory Coast",text:"The Manchester United winger is Ivory Coast's spark — direct, fearless and electric in transition. If the Elephants are to hurt Germany, it will likely come through his runs."},
+      {name:"Franck Kessié",team:"Ivory Coast",text:"The midfield enforcer who drove Ivory Coast to the 2024 Afcon title. Box-to-box power and leadership — he must win the physical battle with Goretzka and Pavlovic for the Elephants to compete."},
+      {name:"Wilfried Singo",team:"Ivory Coast",text:"A galloping, athletic full-back/wing-back at Galatasaray who offers both defensive steel and a real outlet going forward. His duel with Sané down that flank could decide the game."},
+      {name:"Joshua Kimmich",team:"Germany",text:"Captain and conductor. Whether at right-back or in midfield, he sets Germany's tempo and is their set-piece and crossing threat. The leader who must keep Germany controlled under pressure."}
+    ],
+    importance:"A win for either side, on three points already, all but seals qualification and points first place. Germany want top spot to steer their knockout path and confirm their favourites tag; Ivory Coast know beating a giant would announce them as genuine dark horses. The loser is far from out — but a draw suits both and could leave the group to be settled on the final day.",
+    probs:{h:54,d:27,a:19}
+  },
+  34: {
+    group:"E", home:"Ecuador", away:"Curaçao",
+    formation:{ home:"4-3-3", away:"5-3-2" },
+    xi:{
+      home:["Galíndez","Preciado","Pacho","Hincapié","Estupiñán","Moisés Caicedo","Alan Franco","Kendry Páez","Plata","Enner Valencia","Nilson Angulo"],
+      away:["Room","Brenet","Bazoer","Obispo","Sambo","Floranus","Comenencia","Juninho Bacuna","Leandro Bacuna","Locadia","Chong"]
+    },
+    storyline:"Two sides reeling from matchday one, but in very different ways. Ecuador lost 1-0 to Ivory Coast despite their formidable defence — the old problem of not scoring enough resurfacing at the worst moment. Curaçao, the smallest nation by population ever to reach a World Cup and led by 78-year-old Dick Advocaat, the oldest coach in the tournament's history, were brought down to earth by a 7-1 thrashing from Germany. Now both need points to keep their hopes alive. For Ecuador, marshalled by Willian Pacho and Piero Hincapié, it is about turning defensive solidity into a result. For Curaçao's band of diaspora footballers, it is about restoring pride and belief after a chastening opener — and the dream of a knockout place is still, improbably, alive.",
+    tactical:"Ecuador will see the lion's share of the ball and Beccacece's Bielsa-influenced pressing should pin Curaçao back. The question, as ever, is the final third: Enner Valencia leads the line but Ecuador's young attackers — Kendry Páez, Gonzalo Plata, Nilson Angulo — must provide the cutting edge that was missing against Ivory Coast. Moisés Caicedo will dictate from deep. Curaçao, after the Germany mauling, are likely to abandon their possession instincts for a deep 5-3-2, packing bodies behind the ball and hoping Jürgen Locadia and Tahith Chong can nick something on the break. If Ecuador are patient and move Curaçao's block, the gaps will come; if they get anxious in front of goal, Curaçao's low block could frustrate them.",
+    watch:[
+      {name:"Moisés Caicedo",team:"Ecuador",text:"The Chelsea midfielder is Ecuador's engine and their best player — a ball-winning, progressive presence who sets the tempo. Everything good Ecuador do runs through him."},
+      {name:"Piero Hincapié",team:"Ecuador",text:"Part of a defence that conceded just five goals in 18 qualifiers. Aggressive, ball-playing and Premier League-bound quality — but here he is needed as much for his composure stepping into midfield."},
+      {name:"Kendry Páez",team:"Ecuador",text:"The 18-year-old prodigy already bound for Chelsea. Fearless, creative and a set-piece threat — exactly the kind of x-factor Ecuador need to solve their scoring problem."},
+      {name:"Leandro Bacuna",team:"Curaçao",text:"The experienced former Premier League midfielder is Curaçao's standout and on-pitch leader. His quality and set-piece delivery are the team's most likely source of a moment."},
+      {name:"Tahith Chong",team:"Curaçao",text:"The ex-Manchester United winger offers Curaçao genuine ball-carrying threat in transition — their best hope of turning a defensive shift into a counterattacking chance."},
+      {name:"Eloy Room",team:"Curaçao",text:"The goalkeeper who must produce the game of his life. After conceding seven against Germany, Curaçao need their keeper to be the calm, commanding figure that keeps them in the tie."}
+    ],
+    importance:"Effectively must-win for both. Ecuador cannot start 0-2 if they want to reach the knockouts from a tough group — and with Germany and Ivory Coast both on three points, defeat would be close to fatal. Curaçao, after the Germany humbling, need anything they can get to keep their fairytale alive; a win would be one of the great stories of the group stage.",
+    probs:{h:64,d:23,a:13}
+  },
+  35: {
+    group:"F", home:"Netherlands", away:"Sweden",
+    formation:{ home:"4-3-3", away:"3-5-2" },
+    xi:{
+      home:["Verbruggen","Dumfries","Van Dijk","Van de Ven","Aké","Frenkie de Jong","Reijnders","Gravenberch","Gakpo","Depay","Kluivert"],
+      away:["Widell Zetterström","Lindelöf","Hien","Starfelt","Elanga","Bergvall","Ayari","Gudmundsson","Svensson","Isak","Gyökeres"]
+    },
+    storyline:"This was supposed to be a routine afternoon for the Netherlands. Instead they arrive under pressure: Ronald Koeman's much-fancied Oranje were held 2-2 by Japan, their lauded back four looking anything but watertight. Sweden, by contrast, are flying. Written off before the tournament, Graham Potter's side tore Tunisia apart 5-1 with Alexander Isak and Viktor Gyökeres — two elite finishers finally unleashed together — running riot. For Isak it was redemption after a grim first season at Liverpool; for Potter, vindication after limited time to imprint his ideas. Top of Group F is on the line, and suddenly it is the Swedes, not the Dutch, who carry the momentum.",
+    tactical:"Koeman's Netherlands will control possession through Frenkie de Jong, Tijjani Reijnders and Ryan Gravenberch, with Denzel Dumfries and the full-backs providing width and Cody Gakpo cutting in off the left. Their vulnerability is exactly what Sweden are built to exploit: Potter's hard-working back five soaks pressure and springs Isak and Gyökeres in behind, with Anthony Elanga's pace on the break a constant outlet. The Van Dijk–Van de Ven axis must be flawless against two of the most lethal strikers at the tournament. If the Dutch midfield dominates and pins Sweden back, the pressure tells; but every time the Oranje over-commit, Sweden have the firepower to punish them on the counter.",
+    watch:[
+      {name:"Virgil van Dijk",team:"Netherlands",text:"Captain, leader, and the man Koeman builds the team around. After a shaky opener against Japan he faces the ultimate test: shackling Isak and Gyökeres. The Netherlands' tournament may hinge on him."},
+      {name:"Frenkie de Jong",team:"Netherlands",text:"The Barcelona midfielder is the Oranje's metronome, gliding past pressure and setting the rhythm. With Sweden sitting deep, his ability to progress the ball and unlock a low block is vital."},
+      {name:"Cody Gakpo",team:"Netherlands",text:"The Liverpool forward is Holland's most direct attacking threat, cutting in from the left to shoot or combine. The Dutch need his end product to break Sweden's resolute back five."},
+      {name:"Alexander Isak",team:"Sweden",text:"The Liverpool striker is rediscovering his best after a difficult debut season at Anfield. Quick, elegant and clinical — paired with Gyökeres he gives Sweden a frontline to fear."},
+      {name:"Viktor Gyökeres",team:"Sweden",text:"The Arsenal No.9 is a relentless, powerful runner who scored for fun before his move to the Premier League. His movement in behind is exactly what stresses the Dutch high line."},
+      {name:"Anthony Elanga",team:"Sweden",text:"The Newcastle winger gives Sweden blistering pace in transition. In Potter's counterattacking setup he is the outlet who turns defensive stints into clear chances for the two strikers."}
+    ],
+    importance:"Top spot in Group F is the prize. Sweden, on three points and full of confidence, can take command with a win over the group's biggest name. The Netherlands, after dropping points to Japan, badly need a response — defeat would leave Koeman's side third and facing a nervy final round. With both Japan and Sweden looking dangerous, the Dutch margin for error has already vanished.",
+    probs:{h:49,d:28,a:23}
+  },
+  36: {
+    group:"F", home:"Tunisia", away:"Japan",
+    formation:{ home:"4-2-3-1", away:"3-4-2-1" },
+    xi:{
+      home:["Dahmen","Valery","Talbi","Bronn","Abdi","Skhiri","Rani Khedira","Achouri","Mejbri","Elias Saad","Tounekti"],
+      away:["Zion Suzuki","Itakura","Watanabe","Hiroki Ito","Sugawara","Ao Tanaka","Sano","Nakamura","Kubo","Doan","Ueda"]
+    },
+    storyline:"Crisis meets confidence. Tunisia's tournament has already descended into turmoil: a chastening 5-1 defeat to Sweden was followed within a day by the sacking of manager Sabri Lamouchi, leaving a caretaker to pick up the pieces of a side that prided itself on not conceding in qualifying. Japan could hardly be more different. Hajime Moriyasu's cohesive, pressing Samurai Blue earned a hugely impressive 2-2 draw with the Netherlands and look every bit a team capable of a deep run — even without the injured Kaoru Mitoma. For Tunisia this is now win-or-go-home; for Japan, a victory would all but book a place in the last 16 with a game to spare.",
+    tactical:"Japan will press from the front in Moriyasu's well-drilled system, with Takefusa Kubo and Ritsu Doan probing between the lines and the wing-backs Sugawara and Nakamura providing width and overlaps. Tunisia, in disarray off the pitch, will likely retreat into a compact block and try to make themselves hard to beat, leaning on Ellyes Skhiri and Rani Khedira to shield the back four and Hannibal Mejbri to conjure something on the counter. The key for Japan is patience and precision against a wounded but organised opponent; the key for Tunisia is discipline and belief, and finding a way to turn Mejbri's creativity and Tounekti's running into the rare clear chance.",
+    watch:[
+      {name:"Hannibal Mejbri",team:"Tunisia",text:"The Burnley midfielder is Tunisia's creative star and emotional leader — all energy, defiance and flashes of quality. In a team short on elite experience, he is the man asked to drag them back into the tournament."},
+      {name:"Ellyes Skhiri",team:"Tunisia",text:"The Eintracht Frankfurt midfielder is Tunisia's most reliable performer, a tireless, intelligent presence who must marshal a midfield overrun by Sweden and protect a shaken defence."},
+      {name:"Elias Achouri",team:"Tunisia",text:"The Copenhagen winger offers directness and a goal threat from wide. With Tunisia likely on the back foot, his ability to carry the ball and relieve pressure is crucial."},
+      {name:"Takefusa Kubo",team:"Japan",text:"The Real Sociedad playmaker is Japan's jewel — a left-footed dribbler who finds pockets and unlocks defences. Against a deep Tunisian block, he is the most likely man to provide the key."},
+      {name:"Ritsu Doan",team:"Japan",text:"The Eintracht Frankfurt forward is direct, two-footed and a big-game performer who scored against Germany and Spain at the last World Cup. A relentless, clever attacking outlet."},
+      {name:"Ayase Ueda",team:"Japan",text:"The Feyenoord striker leads the line with sharp movement and clinical finishing. With Mitoma out, Japan need their No.9 to convert the chances Kubo and Doan create."}
+    ],
+    importance:"For Tunisia it is do-or-die: another defeat ends their World Cup with a game to spare and deepens the crisis sparked by Lamouchi's exit. For Japan, victory over a reeling opponent would be a major step towards the knockouts and possibly top spot — a chance for Moriyasu's side to seize control of Group F while the Netherlands and Sweden take points off each other.",
+    probs:{h:25,d:30,a:45}
+  },
+  37: {
+    group:"H", home:"Uruguay", away:"Cape Verde",
+    formation:{ home:"4-2-3-1", away:"4-4-2" },
+    xi:{
+      home:["Rochet","Varela","Giménez","Araújo","Piquerez","Ugarte","Valverde","Pellistri","De Arrascaeta","Maximiliano Araújo","Núñez"],
+      away:["Vozinha","Wagner Pina","Roberto Lopes","Diney Borges","Steven Moreira","Garry Rodrigues","Jamiro Monteiro","Deroy Duarte","Kevin Pina","Livramento","Willy Semedo"]
+    },
+    storyline:"Cape Verde arrive as the feel-good story of Group H. The islanders — a nation of barely half a million people — held Spain to a goalless draw on matchday one, a result that ranks among the great upsets of the group stage and sent the Atlantic archipelago into raptures. Uruguay, by contrast, were left frustrated, held 1-1 by Saudi Arabia in a display that fell well short of Marcelo Bielsa's demands. Now La Celeste must respond. Bielsa-ball — relentless pressing, total commitment — will be thrown at a Cape Verde side brimming with belief. For Uruguay it is a question of converting dominance into goals, the very problem that has dogged a team no longer blessed with the scoring power of old. For Cape Verde, another point against a South American heavyweight would put the knockouts firmly in view.",
+    tactical:"Expect Uruguay to press high and suffocate Cape Verde, with Manuel Ugarte and Federico Valverde driving the midfield and Giorgian de Arrascaeta floating behind Darwin Núñez. The concern for Bielsa is the finishing: Núñez has struggled for form, and Uruguay must be clinical with the chances their pressure creates. Cape Verde, settled and physical after years together under Bubista, will defend in a compact 4-4-2 and look to spring Garry Rodrigues and Dailon Livramento on the counter, with Jamiro Monteiro pulling the strings. Missing the injured Logan Costa at the back, they must be disciplined against Uruguay's runners. If Uruguay's press forces errors they should win comfortably; if Cape Verde weather the storm, their counterattack carries a genuine sting.",
+    watch:[
+      {name:"Federico Valverde",team:"Uruguay",text:"The Real Madrid all-action midfielder is Uruguay's engine and emblem — box-to-box energy, a thunderous shot and total commitment to Bielsa's pressing. Simply their most important player."},
+      {name:"Darwin Núñez",team:"Uruguay",text:"Uruguay's hopes of goals rest on him, but the Al-Hilal striker arrives short of form. Chaotic, powerful and unpredictable — if his finishing clicks, Cape Verde will struggle to contain him."},
+      {name:"Ronald Araújo",team:"Uruguay",text:"The Barcelona centre-back anchors the defence with power and pace. Against Cape Verde's counterattack his speed in covering space behind Uruguay's high line is crucial."},
+      {name:"Jamiro Monteiro",team:"Cape Verde",text:"The creative hub of the islanders' midfield. Composed and technical, he is the man who turns defending into attacking and dictates whether Cape Verde can sustain pressure."},
+      {name:"Garry Rodrigues",team:"Cape Verde",text:"The experienced winger brings flair and a goal threat from wide — Cape Verde's most likely match-winner on the break against an aggressive Uruguayan back line."},
+      {name:"Dailon Livramento",team:"Cape Verde",text:"The forward is Cape Verde's brightest attacking spark, quick and direct. After the heroics against Spain, he carries the islanders' hopes of another famous result."}
+    ],
+    importance:"Cape Verde scent something extraordinary: a win would put them on the brink of a first-ever World Cup knockout berth. Uruguay, after a flat opener, badly need three points to take control of the group and ease the pressure on Bielsa — drop more here and qualification suddenly looks precarious in a group where everyone took a point on matchday one.",
+    probs:{h:60,d:26,a:14}
+  },
+  38: {
+    group:"H", home:"Spain", away:"Saudi Arabia",
+    formation:{ home:"4-3-3", away:"4-5-1" },
+    xi:{
+      home:["Raya","Pedro Porro","Cubarsí","Laporte","Cucurella","Pedri","Rodri","Merino","Lamine Yamal","Oyarzabal","Nico Williams"],
+      away:["Al-Owais","Saud Abdulhamid","Al-Amri","Al-Tambakti","Nawaf Boushal","Nasser Al-Dawsari","Mohamed Kanno","Al-Khaibari","Khalid Al-Ghannam","Salem Al-Dawsari","Al-Buraikan"]
+    },
+    storyline:"Spain were the pre-tournament favourites and yet here they are, having dropped points in their opener — a stunning goalless draw against Cape Verde that nobody saw coming. Luis de la Fuente's side dominated the ball but could not break the islanders down, a rare off-day for a frontline featuring Lamine Yamal and Nico Williams. Saudi Arabia, meanwhile, earned a creditable 1-1 draw with Uruguay, exactly the kind of disciplined, defensive performance Georgios Donis has built his side around. Now Spain must rediscover their ruthlessness against a team set up to frustrate. With every side in Group H on a single point, the European champions know a stumble here would turn qualification into a genuine scramble.",
+    tactical:"This is the immovable object against the irresistible force. Saudi Arabia will sit deep in a packed 4-5-1, defending the edge of their box and trying to deny space to Spain's creators. Spain will dominate possession through Pedri and Rodri, working the ball wide to Lamine Yamal and Nico Williams to attack one-v-one — the most likely route through a massed defence. The key is patience and movement: Mikel Oyarzabal's runs, Dani Olmo or Pedri arriving late, and quick switches to stretch the Saudi block. Saudi Arabia's hopes rest on staying compact, riding their luck and releasing Salem Al-Dawsari on the counter. If Spain move the ball fast enough, the quality gap should tell; if they grow impatient, another frustrating afternoon looms.",
+    watch:[
+      {name:"Lamine Yamal",team:"Spain",text:"The Barcelona teenager is the most exciting talent in world football — a left foot that bends games to his will. Against a deep block, his ability to beat his man and create from nothing is Spain's golden key."},
+      {name:"Pedri",team:"Spain",text:"The metronome. The Barcelona midfielder controls tempo and finds spaces others cannot see — exactly the player needed to unpick a stubborn, low-sitting Saudi defence."},
+      {name:"Nico Williams",team:"Spain",text:"Blistering pace and fearless dribbling down the left. He stretches defences and attacks the byline — the perfect foil to Yamal on the opposite flank."},
+      {name:"Salem Al-Dawsari",team:"Saudi Arabia",text:"The Al-Hilal winger is Saudi Arabia's talisman and their one realistic source of a goal — the man who famously sank Argentina in 2022. On the counter, he is dangerous."},
+      {name:"Firas Al-Buraikan",team:"Saudi Arabia",text:"The lone striker tasked with holding the ball up and giving an overworked defence respite. His work rate and link play are vital to any Saudi counterattacking hope."},
+      {name:"Nasser Al-Dawsari",team:"Saudi Arabia",text:"An energetic, disciplined midfielder who will spend the afternoon screening the defence. His tireless covering is central to Donis's plan to frustrate the champions."}
+    ],
+    importance:"Spain simply have to win. Two dropped points already mean another slip would put the European champions in real danger and blow Group H wide open. For Saudi Arabia, a point against the favourites would be a triumph that puts them in a strong position to chase a knockout place — and pile yet more pressure on de la Fuente's stuttering side.",
+    probs:{h:81,d:13,a:6}
+  },
+  39: {
+    group:"G", home:"Belgium", away:"Iran",
+    formation:{ home:"4-2-3-1", away:"5-3-2" },
+    xi:{
+      home:["Courtois","Castagne","De Winter","Theate","De Cuyper","Onana","Tielemans","Doku","De Bruyne","Trossard","Lukaku"],
+      away:["Beiranvand","Hardani","Khalilzadeh","Kanaani-Zadegan","Hajsafi","Mohammadi","Ezatolahi","Ghoddos","Cheshmi","Taremi","Jahanbakhsh"]
+    },
+    storyline:"Both sides let leads slip from their grasp on matchday one. Belgium were held 1-1 by Egypt, the familiar tension between a glittering attack and a brittle defence on show once again under Rudi Garcia. Iran drew 2-2 with New Zealand in a result that felt like two points dropped, Amir Ghalenoei's well-organised side undone by lapses they will be desperate to correct. Now the two meet with control of Group G at stake. Belgium still possess the star power — Kevin De Bruyne pulling strings, Jérémy Doku terrorising full-backs, Romelu Lukaku leading the line — but Iran are disciplined, tactically flexible and carry a genuine threat in Mehdi Taremi. For a Belgian golden generation running out of road, this is a game they are expected to win; for Iran, a chance to upset one of Europe's biggest names.",
+    tactical:"Belgium will control possession and look to De Bruyne to unlock Iran with his passing range, with Doku's dribbling the most direct threat against a defence that will sit deep. Iran are likely to set up in a compact 5-3-2, denying space between the lines and trusting Saeid Ezatolahi to break up play before springing Taremi and the pace of Jahanbakhsh on the counter. The decisive area is Belgium's defence — their acknowledged weak point — against Taremi's movement and link play. If Belgium's front four click they have far too much quality; but if they are sloppy in transition, Iran's experienced, streetwise forwards know exactly how to make them pay.",
+    watch:[
+      {name:"Kevin De Bruyne",team:"Belgium",text:"Still the creative genius at the heart of everything Belgium do. The Napoli playmaker's vision and delivery are the difference-makers — against a deep Iranian block, his is the mind most likely to find the key."},
+      {name:"Jérémy Doku",team:"Belgium",text:"The Manchester City winger is electric — direct, unpredictable and a nightmare in one-v-one situations. Against a defensive Iran, his ability to beat his man and create chaos is Belgium's most potent weapon."},
+      {name:"Romelu Lukaku",team:"Belgium",text:"Belgium's all-time top scorer leads the line, though he was short of minutes at Napoli this season. His hold-up play and penalty-box presence remain central to how Belgium break teams down."},
+      {name:"Mehdi Taremi",team:"Iran",text:"The Olympiakos striker is Iran's standout — clever, tireless and clinical, a genuine top-level forward. If Iran are to spring a surprise, his movement and finishing will be at the centre of it."},
+      {name:"Alireza Jahanbakhsh",team:"Iran",text:"The experienced former Premier League winger offers pace and a goal threat on the break. His running in transition is key to Iran turning defensive solidity into a counterattacking chance."},
+      {name:"Saman Ghoddos",team:"Iran",text:"A composed, technical midfielder who links Iran's defence and attack. His ability to keep the ball under Belgian pressure will determine whether Iran can sustain any spells of control."}
+    ],
+    importance:"With all four Group G teams level on a point, this is the game that breaks the deadlock. Victory for Belgium would steady a nervy start and put them in command; anything less keeps the pressure firmly on Garcia's underachieving side. For Iran, a positive result against the group's most decorated team would be a statement — and a huge step towards a rare place in the knockout rounds.",
+    probs:{h:62,d:24,a:14}
+  },
+  40: {
+    group:"G", home:"New Zealand", away:"Egypt",
+    formation:{ home:"4-4-2", away:"4-2-3-1" },
+    xi:{
+      home:["Crocombe","Payne","Bindon","Boxall","Cacace","Ben Old","Stamenić","Bell","Sarpreet Singh","Wood","Waine"],
+      away:["El-Shenawy","Mohamed Hany","Yasser Ibrahim","Abdelmonem","Ahmed Fatouh","Emam Ashour","Hamdy Fathy","Salah","Zizo","Trezeguet","Marmoush"]
+    },
+    storyline:"New Zealand arrive believing. A 2-2 draw with Iran on matchday one earned a precious point and fed a conviction within the camp that they can reach the knockout rounds for the first time in their history. Egypt, too, will feel they should have more after being held 1-1 by Belgium, a typically organised and committed display let down only by a lack of cutting edge. Now Hossam Hassan's side must turn solidity into points — and they have the man to do it in Mohamed Salah, supported by the rising threat of Omar Marmoush. For New Zealand, marshalled by Darren Bazeley and led by the talismanic Chris Wood, it is the biggest 90 minutes in the nation's footballing life: beat Egypt and the dream of the last 16 becomes very real.",
+    tactical:"Egypt will have the better players and look to dominate, with Salah drifting in off the right and Marmoush stretching New Zealand in behind, Emam Ashour the creative link in midfield. The risk for Egypt is the same as against Belgium — if New Zealand double up on Salah and stay compact, Egypt can look blunt. The All Whites will defend deep in a 4-4-2, stay physical and aerial, and pin their hopes on set pieces and Chris Wood's penalty-box presence. Liberato Cacace's deliveries from the left are a key weapon. If Egypt move the ball quickly and find Salah in space, their quality should win out; if New Zealand frustrate them and make it a battle, their physicality could earn another famous point.",
+    watch:[
+      {name:"Mohamed Salah",team:"Egypt",text:"The Liverpool superstar is Egypt's everything — their captain, talisman and by far their most likely source of a goal. Shackling him is New Zealand's single biggest task; if they cannot, Egypt usually find a way."},
+      {name:"Omar Marmoush",team:"Egypt",text:"The Manchester City forward gives Egypt a second elite threat — quick, direct and clinical. His movement in behind is exactly what can punish a deep-lying New Zealand defence."},
+      {name:"Emam Ashour",team:"Egypt",text:"The Al Ahly midfielder is Egypt's creative engine, the man tasked with passing through New Zealand's press and feeding Salah and Marmoush in dangerous areas."},
+      {name:"Chris Wood",team:"New Zealand",text:"The Nottingham Forest striker is New Zealand's captain and goal threat, despite an injury-plagued year. Powerful and clinical in the box, he is the focal point of everything the All Whites do."},
+      {name:"Marko Stamenić",team:"New Zealand",text:"The Swansea midfielder brings energy and quality to the New Zealand engine room — vital in disrupting Egypt's rhythm and launching the counterattacks that could spring Wood."},
+      {name:"Liberato Cacace",team:"New Zealand",text:"The Wrexham full-back is New Zealand's attacking outlet down the left, with a fine delivery from open play and set pieces — a key source of the crosses Wood thrives on."}
+    ],
+    importance:"This is enormous for both. New Zealand, buoyed by their point against Iran, know victory would put them on the cusp of a historic knockout place. Egypt cannot afford to stumble: with the group finely poised, anything less than a win leaves Salah's side chasing qualification on the final day. Expect Egypt to attack and New Zealand to make it a fight.",
+    probs:{h:30,d:30,a:40}
+  },
+  41: {
+    group:"I", home:"Norway", away:"Senegal",
+    formation:{ home:"4-3-3", away:"4-3-3" },
+    xi:{
+      home:["Nyland","Ryerson","Ajer","Østigård","Møller Wolfe","Berge","Ødegaard","Patrick Berg","Nusa","Haaland","Sørloth"],
+      away:["Édouard Mendy","Krépin Diatta","Koulibaly","Niakhaté","Jakobs","Pape Matar Sarr","Idrissa Gueye","Lamine Camara","Ismaïla Sarr","Nicolas Jackson","Sadio Mané"]
+    },
+    storyline:"A heavyweight collision with very different moods. Norway are flying: back at a World Cup after a 28-year absence, they marked the occasion by thrashing Iraq 4-1, with Erling Haaland leading a side that averaged nearly five goals a game in qualifying. Senegal are wounded, beaten 3-1 by France in an opener that exposed them against elite opposition. Now Pape Thiaw's African giants must respond or risk an early exit, while Norway sense a chance to take a giant stride towards the knockouts. It is a meeting of golden generations — Haaland and Martin Ødegaard against Sadio Mané, Nicolas Jackson and a squad packed with Premier League quality. For Senegal it is close to must-win; for Norway, a shot at making their long-awaited return truly memorable.",
+    tactical:"Norway will look to get Haaland into the game early and often, with Ødegaard threading the passes and Antonio Nusa and Alexander Sørloth providing the supply and movement around him. Their threat is direct and devastating, but a tough group means they cannot sit back. Senegal have the athletes to match them — Koulibaly marshalling the back line against Haaland, Idrissa Gueye and Lamine Camara providing energy and bite in midfield, and the searing pace of Ismaïla Sarr and Mané to exploit Norway in transition. The pivotal duel is Koulibaly versus Haaland: win it and Senegal can control the game; lose it and Norway's No.9 will punish them. Expect an open, end-to-end contest between two teams who both want to attack.",
+    watch:[
+      {name:"Erling Haaland",team:"Norway",text:"One of the most lethal finishers on the planet, finally on the World Cup stage he has craved. The Manchester City striker scored for fun in qualifying — give him a chance and he rarely misses."},
+      {name:"Martin Ødegaard",team:"Norway",text:"Norway's captain and creative conductor. The Arsenal playmaker's vision and set-piece delivery are the supply line to Haaland — as he goes, so often does Norway."},
+      {name:"Antonio Nusa",team:"Norway",text:"The RB Leipzig winger offers electric pace and fearless dribbling, stretching defences and creating the space in which Haaland thrives. A rising star with the tools to torment Senegal."},
+      {name:"Sadio Mané",team:"Senegal",text:"The talisman and emotional leader. Even at this stage of his career the Al-Nassr forward remains Senegal's matchwinner — quick, clever and capable of conjuring something from nothing when his side needs it most."},
+      {name:"Nicolas Jackson",team:"Senegal",text:"The Chelsea striker brings pace and movement to lead the line. With Senegal needing goals, his ability to run in behind Norway's defence is central to their hopes of a response."},
+      {name:"Pape Matar Sarr",team:"Senegal",text:"The Tottenham midfielder is the engine of Senegal's midfield — tireless, progressive and key to both stopping Ødegaard and launching the counters that could hurt Norway."}
+    ],
+    importance:"Huge for both. Norway, level with France on three points, can all but book their place in the last 16 with a win and make a statement of intent. Senegal, beaten by France, are staring at an early exit — defeat would leave them needing favours on the final day. For one of the pre-tournament dark horses, this is suddenly a game they cannot afford to lose.",
+    probs:{h:38,d:28,a:34}
+  },
+  42: {
+    group:"I", home:"France", away:"Iraq",
+    formation:{ home:"4-2-3-1", away:"5-3-2" },
+    xi:{
+      home:["Maignan","Koundé","Saliba","Upamecano","Théo Hernández","Tchouaméni","Manu Koné","Dembélé","Olise","Mbappé","Thuram"],
+      away:["Fahad Talib","Hussein Ali","Rebin Sulaka","Merchas Doski","Manaf Younis","Zaid Tahseen","Amir Al-Ammari","Zidane Iqbal","Aimar Sher","Aymen Hussein","Ali Al-Hamadi"]
+    },
+    storyline:"France look every inch contenders. Didier Deschamps's side opened with a stylish 3-1 win over Senegal, their remarkable front four — Mbappé, Dembélé, Olise and Thuram — offering a glimpse of why many fancy them to go all the way. Iraq, by contrast, were brought crashing down to earth, hammered 4-1 by Norway on their long-awaited return to the World Cup stage. Now Graham Arnold's side face the toughest possible assignment. The Australian coach has embraced the underdog billing — 'the pressure is on the other three teams,' he insists — but keeping out a France attack of this calibre is a job that has defeated far better defences. For Iraq, simply competing with one of the favourites would be a measure of progress; for France, a chance to confirm their status and seal qualification early.",
+    tactical:"France will dominate the ball and Iraq know survival means defending deep and in numbers — expect a back five, two banks behind the ball and a plan to make the pitch as small as possible. The problem is France's array of weapons: Mbappé's pace stretching the last line, Dembélé and Olise combining in the half-spaces, Tchouaméni controlling from deep. Iraq's only hope is discipline, a heroic goalkeeping display from Fahad Talib, and the occasional counter through Aymen Hussein and the Premier League-tested Ali Al-Hamadi. If France move the ball quickly they will eventually overwhelm the block; Iraq's aim is damage limitation and the dream of nicking something on a rare break.",
+    watch:[
+      {name:"Kylian Mbappé",team:"France",text:"The captain and superstar. The Real Madrid forward's pace and finishing make him almost unstoppable in this kind of game — against a deep block, his runs in behind are the most likely way through."},
+      {name:"Ousmane Dembélé",team:"France",text:"Two-footed, direct and unpredictable, the PSG winger is in the form of his life. His dribbling and end product give France a second match-winner alongside Mbappé."},
+      {name:"Michael Olise",team:"France",text:"The Bayern Munich winger has emerged as one of Europe's finest creators — silky, inventive and a set-piece threat. Against massed defences, his craft is exactly what unlocks them."},
+      {name:"Aymen Hussein",team:"Iraq",text:"Iraq's main striker and their best hope of a goal. Strong and willing, he will be isolated for long spells but must make the most of any rare chance on the counter."},
+      {name:"Zidane Iqbal",team:"Iraq",text:"The Utrecht midfielder, once on Manchester United's books, brings the technical quality to keep the ball under French pressure — vital if Iraq are to have any respite at all."},
+      {name:"Ali Al-Hamadi",team:"Iraq",text:"The Ipswich forward offers pace and Premier League experience off the front. On the break, his running is Iraq's most realistic route to threatening Maignan's goal."}
+    ],
+    importance:"France will expect to win comfortably and seal their place in the knockout rounds with a game to spare, freeing Deschamps to rotate later. For Iraq, realism reigns: damage limitation against the favourites, keep the goal difference respectable, and save their energy for what they will see as their real chance — the final group game. A shock here would be one of the all-time World Cup upsets.",
+    probs:{h:86,d:10,a:4}
+  },
+  43: {
+    group:"J", home:"Argentina", away:"Austria",
+    formation:{ home:"4-3-3", away:"4-2-3-1" },
+    xi:{
+      home:["Emiliano Martínez","Molina","Romero","Lisandro Martínez","Tagliafico","De Paul","Enzo Fernández","Mac Allister","Messi","Julián Álvarez","Nico González"],
+      away:["Schlager","Mwene","Danso","Alaba","Prass","Seiwald","Xaver Schlager","Laimer","Sabitzer","Wimmer","Arnautović"]
+    },
+    storyline:"The world champions against Ralf Rangnick's relentless Austria — a genuine heavyweight tie for top spot in Group J. Argentina began in style, Lionel Messi rolling back the years with a sensational hat-trick in a 3-0 win over Algeria that served notice the holders mean business. Austria were equally convincing, brushing aside Jordan 3-1 with the structured, aggressive football Rangnick has spent years drilling into them. Both sit on three points, both fancy themselves to win the group, and both have reasons for confidence. For Argentina it is about Messi and the class of 2022 proving they still have the hunger; for Austria, a chance to test their continuity and intensity against the very best, even with the influential Christoph Baumgartner missing through injury.",
+    tactical:"Austria will press aggressively and try to disrupt Argentina's rhythm before it builds — Konrad Laimer and Nicolas Seiwald hunting in midfield, the whole side compact and coordinated in Rangnick's image. The risk is that if their structure slips even slightly, Messi, Julián Álvarez and Argentina's runners will punish them. Scaloni's champions will look to control through De Paul, Enzo Fernández and Mac Allister, with Messi drifting into pockets to orchestrate. The key battle is Austria's pressing discipline against Argentina's quality in tight spaces: contain Messi and frustrate the holders, and Austria can win; let him find a yard, and the game can turn in an instant. Expect a tactical, intense contest between two well-coached sides.",
+    watch:[
+      {name:"Lionel Messi",team:"Argentina",text:"Still the maestro. Fresh off a hat-trick against Algeria, the Inter Miami legend remains the defining player of his era — give him space and he decides World Cup matches on his own."},
+      {name:"Julián Álvarez",team:"Argentina",text:"The Atlético Madrid forward's relentless movement and finishing make him the ideal foil for Messi. Tireless and clinical, he stretches defences and scores the goals that win tournaments."},
+      {name:"Enzo Fernández",team:"Argentina",text:"The Chelsea midfielder is the metronome of the world champions, dictating tempo and breaking lines. Winning the midfield battle against Austria's pressers runs through him."},
+      {name:"David Alaba",team:"Austria",text:"The Real Madrid veteran is Austria's leader and quarterback at the back, marshalling the defence and starting attacks. His experience and composure will be tested to the limit by Argentina."},
+      {name:"Konrad Laimer",team:"Austria",text:"The Bayern Munich man is the embodiment of Rangnick's Austria — non-stop energy, aggression and pressing. He must lead the effort to deny Argentina's midfield time on the ball."},
+      {name:"Marcel Sabitzer",team:"Austria",text:"The Borussia Dortmund midfielder brings goals and drive from deep. With Baumgartner out, his creativity and late runs become even more important to Austria's attacking threat."}
+    ],
+    importance:"Top spot is on the line. Both on three points, victory here means almost certain qualification and the favourable side of the knockout draw. A draw would leave the group to be decided on the final day. For Argentina it is a chance to lay down a marker; for Austria, beating the world champions would be a landmark result and proof that Rangnick's project belongs among the elite.",
+    probs:{h:60,d:25,a:15}
+  },
+  44: {
+    group:"J", home:"Jordan", away:"Algeria",
+    formation:{ home:"4-2-3-1", away:"4-3-3" },
+    xi:{
+      home:["Yazeed Abulaila","Yazan Al-Arab","Abu Dahab","Abualnadi","Salim Obaid","Amer Jamous","Noor Al-Rawabdeh","Mohammad Abu Zrayq","Nizar Al-Rashdan","Musa Al-Taamari","Ali Olwan"],
+      away:["Luca Zidane","Belghali","Aissa Mandi","Tougai","Aït-Nouri","Zerrouki","Nabil Bentaleb","Farès Chaïbi","Riyad Mahrez","Amine Gouiri","Amoura"]
+    },
+    storyline:"Two sides who took a beating on matchday one meet knowing defeat almost certainly means elimination. Jordan, at their first-ever World Cup, were beaten 3-1 by Austria — a proud debut that ultimately exposed their lack of big-game experience. Algeria were worse, collapsing to a 3-0 defeat against Argentina that revived uncomfortable memories of their Afcon quarter-final implosion against Nigeria and the questions over how this talented side handles pressure. Now both must win. For Vladimir Petkovic's Algeria, blessed with the technical gifts of Riyad Mahrez and a wealth of European-based talent, it is about showing the character to match the quality. For Jamal Sellami's Jordan, it is the chance to make history and keep their fairytale alive against a wounded favourite.",
+    tactical:"Algeria will see most of the ball and look to their array of attacking talent — Mahrez cutting in off the right, Amine Gouiri leading the line, Mohamed Amoura's pace stretching the game. Their challenge is composure and ruthlessness against a Jordan side that will sit deep and defend in numbers. Jordan, missing the injured striker Yazan Al-Naimat, will pin their hopes on quick transitions and the electric pace of star man Musa Al-Taamari, with Noor Al-Rawabdeh and Amer Jamous providing the legs in midfield. The key is whether Algeria can break down a packed defence without getting impatient; if they force it, Jordan's counterattack through Al-Taamari carries genuine danger on a night when nerves will play their part.",
+    watch:[
+      {name:"Riyad Mahrez",team:"Algeria",text:"Algeria's talisman and creative star. The former Manchester City winger's left foot can decide tight games — against a deep Jordan block, his craft and set-piece delivery are Algeria's most likely key."},
+      {name:"Amine Gouiri",team:"Algeria",text:"The Marseille striker leads the line with intelligent movement and clinical finishing. With Algeria needing goals, his ability to find space in a crowded box is crucial."},
+      {name:"Mohamed Amoura",team:"Algeria",text:"The Wolfsburg forward brings blistering pace and directness. His running in behind is exactly the threat to stretch and unsettle a deep-defending Jordan side."},
+      {name:"Musa Al-Taamari",team:"Jordan",text:"Jordan's star and matchwinner. The Rennes winger is their main outlet — quick, skilful and dangerous on the counter. Everything Jordan threaten will likely run through him."},
+      {name:"Ali Olwan",team:"Jordan",text:"With Al-Naimat injured, the striker carries Jordan's goal threat. His finishing and work leading the line are vital to making the most of their rare chances."},
+      {name:"Noor Al-Rawabdeh",team:"Jordan",text:"The energetic midfielder is central to Jordan's pressing and transitions, tasked with both disrupting Algeria's rhythm and feeding Al-Taamari on the break."}
+    ],
+    importance:"Effectively a knockout. Both lost their openers and a second defeat would all but end their tournament. Algeria, with the superior squad, are expected to win and revive their campaign — but the pressure is squarely on them. For Jordan, a first World Cup victory would be historic and keep alive a dream that has already captured their nation. Expect tension and a game of fine margins.",
+    probs:{h:28,d:28,a:44}
+  },
+  45: {
+    group:"L", home:"England", away:"Ghana",
+    formation:{ home:"4-2-3-1", away:"4-3-3" },
+    xi:{
+      home:["Pickford","Reece James","Stones","Guéhi","Dan Burn","Rice","Elliot Anderson","Saka","Bellingham","Rashford","Kane"],
+      away:["Ati-Zigi","Alidu Seidu","Abdul Mumin","Jonas Adjetey","Baba Rahman","Thomas Partey","Elisha Owusu","Antoine Semenyo","Jordan Ayew","Iñaki Williams","Kamaldeen Sulemana"]
+    },
+    storyline:"Two winners meet with control of Group L on the line. England began in style under Thomas Tuchel, Harry Kane scoring twice in a 4-2 victory over Croatia that, for all the defensive wobbles, showcased their attacking riches. Ghana were less flamboyant but ruthless enough, a 1-0 win over Panama built on the set-piece threat and resilience Carlos Queiroz has instilled. Both sit on three points; victory here all but guarantees a place in the last 16 and likely top spot. For England it is a chance to back up the promise of their opener and answer the lingering questions over their defence. For Ghana, led by the in-form Antoine Semenyo, it is the opportunity to topple a tournament favourite and announce themselves as a side to be reckoned with.",
+    tactical:"England will dominate possession and look to their wealth of creators — Jude Bellingham between the lines, Bukayo Saka and Marcus Rashford stretching the play, Harry Kane dropping to link and finish. The questions, as ever, are at the back: Ghana will target England's full-backs and aerial situations, with Queiroz's side a genuine danger from set pieces. Thomas Partey will anchor Ghana's midfield and look to spring Semenyo and the pace of Iñaki Williams and Kamaldeen Sulemana on the counter. The decisive battle is England's defence against Ghana's transitions and dead-ball threat: if England control the tempo through Declan Rice, their quality should tell, but any sloppiness invites Ghana to pounce.",
+    watch:[
+      {name:"Harry Kane",team:"England",text:"The captain and talisman, fresh off a brace against Croatia. England's all-time top scorer is in relentless form — drops deep to create and is utterly clinical in the box. Stop him and you stop England."},
+      {name:"Jude Bellingham",team:"England",text:"The Real Madrid superstar drives England forward with power and quality, arriving late in the box and dictating the biggest moments. A game of this magnitude is exactly his stage."},
+      {name:"Bukayo Saka",team:"England",text:"The Arsenal winger is England's most reliable creator, cutting in off the right to shoot or combine. His one-v-one threat against Ghana's full-back could be decisive."},
+      {name:"Antoine Semenyo",team:"Ghana",text:"One of the most in-form attackers in European football this season. Powerful, direct and clinical, the Bournemouth-to-City forward is Ghana's main threat and a real handful for England's defenders."},
+      {name:"Thomas Partey",team:"Ghana",text:"The vastly experienced midfielder is Ghana's anchor and leader, breaking up play and launching attacks. Winning his battle with Rice and Bellingham is central to Ghana's hopes."},
+      {name:"Iñaki Williams",team:"Ghana",text:"The Athletic Bilbao forward brings blistering pace to lead the line or run the channels. On the counter, his movement in behind is exactly the kind of threat that can punish England's high line."}
+    ],
+    importance:"Top spot is the prize. Both on three points, the winner is all but through and steers their knockout path; a draw keeps the group alive into the final round. England want to confirm their favourites status and build momentum; Ghana, eyeing a deep run, know beating one of the tournament's big names would be a statement — and could top the group themselves.",
+    probs:{h:62,d:24,a:14}
+  },
+  46: {
+    group:"L", home:"Panama", away:"Croatia",
+    formation:{ home:"4-4-2", away:"4-3-3" },
+    xi:{
+      home:["Luis Mejía","Michael Murillo","José Córdoba","Fidel Escobar","Eric Davis","José Luis Rodríguez","Adalberto Carrasquilla","Aníbal Godoy","Édgar Bárcenas","Ismael Díaz","Cecilio Waterman"],
+      away:["Livakovic","Stanisic","Gvardiol","Sutalo","Erlic","Modric","Kovacic","Luka Sucic","Pasalic","Budimir","Perisic"]
+    },
+    storyline:"For Croatia's golden generation, this is the day the dream must not die. Beaten 4-2 by England in a thrilling opener, the 2018 finalists and 2022 semi-finalists now find themselves needing a result to avoid a humiliating early exit — and at the heart of it all, still, is the 40-year-old maestro Luka Modric, writing the final chapter of a glittering career. Panama stand in their way, and they arrive with belief: a tight 1-0 defeat to Ghana showed Thomas Christiansen's confident, pacey side can compete, and they will fancy their chances against a Croatia team carrying plenty of miles in the legs. It is youthful energy and fearlessness against ageing brilliance and a winning mentality — and for Croatia, defeat is unthinkable.",
+    tactical:"Croatia will look to control the game through midfield, where Modric, Mateo Kovacic and Luka Sucic can dominate possession and dictate tempo. Their concern is legs: in the heat, against Panama's energy and pace, the old guard must manage the game cleverly and not get drawn into a sprint. Panama will press in spells, stay compact in a 4-4-2 and break quickly through Ismael Díaz and the running of José Luis Rodríguez and Cecilio Waterman, with Adalberto Carrasquilla the link in midfield. The key is whether Croatia's quality on the ball can subdue Panama before fatigue bites; if the game opens up and becomes a test of athleticism, Panama have the tools to cause a major upset.",
+    watch:[
+      {name:"Luka Modric",team:"Croatia",text:"The eternal maestro. At 40, the former Ballon d'Or winner remains the heartbeat of Croatia — his passing, control and big-game nous are the team's compass. This could be one of his last great World Cup performances."},
+      {name:"Joško Gvardiol",team:"Croatia",text:"The Manchester City defender is Croatia's most complete modern player — composed in defence and a threat going forward. His pace is vital to covering for an ageing back line against Panama's counters."},
+      {name:"Mateo Kovacic",team:"Croatia",text:"The midfield engine alongside Modric, gliding past pressure and keeping Croatia ticking. With the team needing control, his ability to carry the ball and dictate is essential."},
+      {name:"Adalberto Carrasquilla",team:"Panama",text:"The midfield orchestrator and one of Panama's standout players. Tidy, combative and creative, 'Coco' is the man who must outwork and outpass Croatia's celebrated midfield."},
+      {name:"Ismael Díaz",team:"Panama",text:"The forward is Panama's spark in the final third — quick, skilful and capable of a moment of magic. Against tiring Croatian legs, his directness is a real threat."},
+      {name:"Michael Murillo",team:"Panama",text:"The Beşiktaş full-back brings pace and attacking thrust down the right. His overlapping runs are key to stretching Croatia and turning defence into attack."}
+    ],
+    importance:"Close to must-win for Croatia: after losing to England, another defeat would all but end the tournament for one of world football's most reliable overachievers and bring the curtain down on the Modric era. Panama, beaten narrowly by Ghana, know a result against the 2018 finalists would be historic and breathe life into their campaign. The pressure is squarely on Croatia.",
+    probs:{h:26,d:28,a:46}
+  },
+  47: {
+    group:"K", home:"Portugal", away:"Uzbekistan",
+    formation:{ home:"4-2-3-1", away:"4-2-3-1" },
+    xi:{
+      home:["Diogo Costa","Diogo Dalot","Rúben Dias","Gonçalo Inácio","Nuno Mendes","Vitinha","João Neves","Bernardo Silva","Bruno Fernandes","Rafael Leão","Cristiano Ronaldo"],
+      away:["Utkir Yusupov","Farrukh Sayfiev","Abdukodir Khusanov","Rustam Ashurmatov","Khojiakbar Alijonov","Otabek Shukurov","Odiljon Khamrobekov","Jaloliddin Masharipov","Abbosbek Fayzullaev","Oston Urunov","Eldor Shomurodov"]
+    },
+    storyline:"Portugal arrive needing a response. Held to a surprise 1-1 draw by a resilient DR Congo, Roberto Martínez's side — playing this tournament on a personal, collective mission, the squad still mourning the loss of Diogo Jota — must rediscover their fluency. Standing in their way are Uzbekistan, at their first-ever World Cup under Fabio Cannavaro, the 2006 World Cup-winning captain now in the dugout. The Uzbeks were beaten 3-1 by Colombia but built their qualification on a miserly defence, and they will set up to frustrate. For Portugal, with Cristiano Ronaldo appearing at a record sixth World Cup alongside a deep, talented squad, it is about quality and patience. For Uzbekistan, it is a chance to test themselves against a giant and chase the moment that would define their historic debut.",
+    tactical:"Portugal will dominate the ball, with Bruno Fernandes and Bernardo Silva probing and Rafael Leão's pace stretching the game wide, Vitinha and João Neves controlling the platform. Uzbekistan, organised under Cannavaro and anchored by the Manchester City defender Abdukodir Khusanov, will sit deep and compact, defending the box and hoping to spring Eldor Shomurodov and the talented Abbosbek Fayzullaev on the counter. The key for Portugal is breaking down a stubborn block without growing frustrated — quick combinations, Leão's dribbling and Ronaldo's penalty-box instincts the likeliest routes through. If Uzbekistan stay disciplined they can make life awkward, but Portugal's depth and class should eventually tell.",
+    watch:[
+      {name:"Cristiano Ronaldo",team:"Portugal",text:"At a record sixth World Cup, the Al-Nassr forward remains Portugal's emotional focal point and a relentless goal threat in the box. Quiet against DR Congo, he will be desperate to make his mark here."},
+      {name:"Bruno Fernandes",team:"Portugal",text:"The Manchester United midfielder is Portugal's creative engine — incisive passing, set-piece delivery and goals from midfield. Against a deep block, his vision is central to unlocking it."},
+      {name:"Rafael Leão",team:"Portugal",text:"The Milan winger offers explosive pace and dribbling down the left. His ability to beat his man and create from wide is exactly what stresses a massed Uzbek defence."},
+      {name:"Abdukodir Khusanov",team:"Uzbekistan",text:"The Manchester City defender is the rock on which Uzbekistan's qualification was built — quick, strong and composed. He leads a back line that must withstand sustained Portuguese pressure."},
+      {name:"Eldor Shomurodov",team:"Uzbekistan",text:"The Roma striker is Uzbekistan's main man up front and their chief goal threat. Isolated for long spells, he must make the most of any rare chance on the break."},
+      {name:"Abbosbek Fayzullaev",team:"Uzbekistan",text:"The gifted young attacking midfielder is Uzbekistan's brightest creative spark — technical and fearless. If the debutants are to threaten Portugal, his quality on the ball is key."}
+    ],
+    importance:"Portugal, after dropping points to DR Congo, need a win to take control of Group K and ease the pressure on Martínez. Uzbekistan, beaten by Colombia, know defeat would end their debut World Cup hopes — but a positive result against Portugal would be the stuff of dreams for a nation experiencing the tournament for the first time. Expect Portugal to dominate and Uzbekistan to dig in.",
+    probs:{h:76,d:17,a:7}
+  },
+  48: {
+    group:"K", home:"Colombia", away:"DR Congo",
+    formation:{ home:"4-2-3-1", away:"4-3-3" },
+    xi:{
+      home:["David Ospina","Daniel Muñoz","Davinson Sánchez","Jhon Lucumí","Johan Mojica","Jefferson Lerma","Richard Ríos","Jhon Arias","James Rodríguez","Luis Díaz","Luis Suárez"],
+      away:["Lionel Mpasi","Aaron Wan-Bissaka","Chancel Mbemba","Axel Tuanzebe","Arthur Masuaku","Edo Kayembe","Ngal'ayel Mukau","Noah Sadiki","Théo Bongonda","Yoane Wissa","Fiston Mayele"]
+    },
+    storyline:"Colombia could hardly have asked for a better start. A 3-1 win over Uzbekistan showcased the attacking riches of Néstor Lorenzo's side — Luis Díaz, James Rodríguez and the prolific Luis Suárez combining to suggest goals will not be a problem. DR Congo, meanwhile, produced the result of the round, holding Portugal to a 1-1 draw thanks to Yoane Wissa's header — a display of the resilience and mental toughness that, despite preparations disrupted by an Ebola outbreak at home, defined Sébastien Desabre's side throughout qualifying. Now the two meet with top spot in Group K potentially at stake. It is Colombian flair and firepower against Congolese grit and organisation — and a win for either would go a long way to booking a place in the knockout rounds.",
+    tactical:"Colombia will look to dictate through the brilliance of James Rodríguez, with Luis Díaz's pace and directness on the left their biggest weapon and Luis Suárez's movement and finishing leading the line. DR Congo are extremely hard to break down — compact, disciplined and physically imposing, marshalled by the experienced Chancel Mbemba — but they rarely dominate and can struggle to create in open play. Their plan will be to frustrate Colombia and hit them through Wissa and the pace of Théo Bongonda on the counter. The decisive battle is Colombia's creativity against DR Congo's resilience: if Díaz and James find space the goals should come, but if the Leopards stay compact and turn it into a grind, an upset is well within reach.",
+    watch:[
+      {name:"Luis Díaz",team:"Colombia",text:"Colombia's star and matchwinner. The Bayern Munich winger is electric — pace, dribbling and an eye for goal. Against DR Congo's organised block, his ability to create something from nothing is Colombia's golden ticket."},
+      {name:"James Rodríguez",team:"Colombia",text:"The veteran playmaker remains the creative soul of the team, his passing and set pieces the source of so much Colombia produce. On his day, he still dictates games at the highest level."},
+      {name:"Luis Suárez",team:"Colombia",text:"Not the Uruguayan — the prolific young striker fresh off a big season at Sporting. Colombia's reliable finisher, his movement and clinical edge make him the focal point of a dangerous attack."},
+      {name:"Yoane Wissa",team:"DR Congo",text:"The Newcastle forward scored the goal that held Portugal and is DR Congo's main threat — quick, clever and clinical. On the counter, he is exactly the kind of player who can punish Colombia."},
+      {name:"Chancel Mbemba",team:"DR Congo",text:"The experienced centre-back is the leader of DR Congo's resilient defence — commanding, combative and mentally tough. Keeping out Colombia's attack will run through him."},
+      {name:"Aaron Wan-Bissaka",team:"DR Congo",text:"The West Ham full-back is one of the finest one-v-one defenders around — crucial in shackling Luis Díaz down Colombia's left and a useful outlet going forward on the break."}
+    ],
+    importance:"Potentially decisive for top spot. Colombia, flying after beating Uzbekistan, can take a huge step towards the knockouts and likely first place with another win. DR Congo, buoyed by their draw with Portugal, know a positive result would put their own qualification in their hands. With Group K finely balanced, this is the game that could shape the entire section.",
+    probs:{h:55,d:27,a:18}
+  },
+  25: {
+    group:"A", home:"Czechia", away:"South Africa",
+    formation:{ home:"4-2-3-1", away:"4-3-3" },
+    xi:{
+      home:["Stanek","Coufal","Holes","Hranac","Jurasek","Soucek","Sadilek","Provod","Sulc","Hlozek","Schick"],
+      away:["Ronwen Williams","Khuliso Mudau","Nkosinathi Sibisi","Khulumani Ndamane","Aubrey Modiba","Teboho Mokoena","Thalente Mbatha","Themba Zwane","Oswin Appollis","Lyle Foster","Relebohile Mofokeng"]
+    },
+    storyline:"Two sides who lost their openers meet knowing defeat would leave them on the brink of elimination. Czechia, beaten 2-1 by South Korea, were undone despite the threat of Patrik Schick, who scored 16 Bundesliga goals this season. South Africa, edged 2-0 by hosts Mexico, will feel they can compete with anyone outside the elite after the revival Hugo Broos has overseen. It is a clash of contrasting identities: Miroslav Koubek's physical, set-piece-driven Czechs against a well-drilled, counterattacking South African side knitted together by Teboho Mokoena. With three points up for grabs and both desperate to avoid an early exit, the margins will be fine — and the stakes could hardly be higher this early in the group.",
+    tactical:"Czechia will lean on their physical strengths — aggression, work rate and a serious threat from set pieces, with Tomáš Souček a constant aerial menace in the box and Schick the focal point up front. Their acknowledged weakness is a lack of technical players, which South Africa will look to exploit by playing through midfield, where Mokoena pulls the strings, and springing the pace of Relebohile Mofokeng and Oswin Appollis on the counter. Lyle Foster offers a focal point up top. The key battle is Czechia's set-piece power against South Africa's discipline and speed in transition: if the Czechs make it a physical, direct contest they hold the edge, but South Africa's quick, well-coached counters carry a genuine sting.",
+    watch:[
+      {name:"Patrik Schick",team:"Czechia",text:"The Bayer Leverkusen striker is Czechia's talisman and main goal threat, fresh off a 16-goal Bundesliga season. Clinical and strong in the air, he is the man the whole team is built to feed."},
+      {name:"Tomáš Souček",team:"Czechia",text:"The West Ham midfielder is the experienced spine of the side — a relentless presence who breaks up play and is a huge threat arriving late in the box, especially from set pieces."},
+      {name:"Adam Hložek",team:"Czechia",text:"The versatile Hoffenheim forward offers mobility and a goal threat alongside Schick. His movement and link play are key to Czechia creating in open play, where they can struggle."},
+      {name:"Teboho Mokoena",team:"South Africa",text:"The midfield heartbeat of Broos's revitalised side. Composed, intelligent and a fine passer and set-piece taker, he is the man who knits South Africa together and dictates their tempo."},
+      {name:"Lyle Foster",team:"South Africa",text:"The Burnley striker is South Africa's most prominent name and their focal point up front — strong and mobile, tasked with leading the line and converting the chances their counters create."},
+      {name:"Relebohile Mofokeng",team:"South Africa",text:"The exciting young Orlando Pirates forward is South Africa's brightest spark — quick, direct and fearless. On the break, his dribbling and pace are exactly what can hurt a physical Czech defence."}
+    ],
+    importance:"Effectively must-not-lose for both. After opening defeats, a second loss would leave either side needing favours to reach the knockouts. Czechia want to use their physicality to grind out a first win; South Africa, buoyed by their progress under Broos, will sense an opportunity against beatable opposition. A tense, tight game where set pieces and one moment of quality could decide everything.",
+    probs:{h:42,d:30,a:28}
+  },
   26: {
     group:"B", home:"Switzerland", away:"Bosnia & H.",
     formation:{ home:"4-2-3-1", away:"4-2-3-1" },
@@ -824,7 +1259,7 @@ function renderGroups(){
       const qMark = status==='through'?`<span class="qs">✓</span>`:'';
       return `<tr class="${rowCls}">
         <td class="strip"></td>
-        <td class="team-col"><span class="tw"><span class="flag">${FLAG[r.team]||""}</span><span class="nm">${r.team}</span>${qMark}</span></td>
+        <td class="team-col"><span class="tw"><span class="flag">${FLAG[r.team]||""}</span><span class="nm" data-team="${r.team}">${r.team}</span>${qMark}</span></td>
         <td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td>
         <td>${r.GD>0?"+":""}${r.GD}</td><td class="pts">${r.Pts}</td></tr>`;
     }).join("");
@@ -998,6 +1433,69 @@ function renderTodayBar(){
   bar.innerHTML = `<span class="meta-status">${label}${games.length?' ·':''}</span> ${chips}`;
 }
 
+/* ============================================================
+   TEAM-PATH MODAL — tap a team to see its Round-of-32 opponents
+   ============================================================ */
+function groupOf(team){
+  for(const g in GROUPS) if(GROUPS[g].includes(team)) return g;
+  return null;
+}
+// reverse-lookup: for a group placing (1st/2nd), find its R32 opponent source
+function r32Opp(group, placing){
+  for(const m of [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]){
+    const M = KO[m]; if(!M) continue;
+    if(M.a.t==='g' && M.a.g===group && M.a.r===placing) return M.b;
+    if(M.b.t==='g' && M.b.g===group && M.b.r===placing) return M.a;
+  }
+  return null;
+}
+function ordinal(n){ return n===1?'1st':n===2?'2nd':n===3?'3rd':n+'th'; }
+function placeWord(r){ return r===1?'winners':r===2?'runners-up':ordinal(r)+'-placed team'; }
+
+// full mini standings table for a group, highlighting one placing row
+function miniStand(g, hl){
+  const s = standings(g);
+  const rows = s.map((r,i)=>{
+    const cls = (i+1)===hl ? 'hl' : '';
+    return `<tr class="${cls}">
+      <td class="team-col"><span class="tw"><span class="flag">${FLAG[r.team]||""}</span><span class="nm" data-jump="${r.team}">${r.team}</span></span></td>
+      <td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td>
+      <td>${r.GD>0?"+":""}${r.GD}</td><td class="pts">${r.Pts}</td></tr>`;
+  }).join("");
+  return `<table class="stand mini">
+    <tr><th class="team-col">Group ${g}</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>
+    ${rows}</table>`;
+}
+function renderOpp(opp){
+  if(!opp) return `<div class="opp-head">—</div>`;
+  if(opp.t==='g'){
+    return `<div class="opp-head">vs the <b>${placeWord(opp.r)}</b> of Group ${opp.g}</div>${miniStand(opp.g, opp.r)}`;
+  }
+  if(opp.t==='3'){
+    const tables = opp.groups.map(g => miniStand(g, 3)).join("");
+    return `<div class="opp-head">vs the best <b>3rd-placed team</b> from these groups — the highlighted rows are who's 3rd right now. Settles once the group stage finishes.</div>${tables}`;
+  }
+  return `<div class="opp-head">—</div>`;
+}
+function showTeamPath(team){
+  const g = groupOf(team); if(!g) return;
+  const s = standings(g);
+  const pos = s.findIndex(r => r.team===team) + 1;
+  $("#modalBody").innerHTML = `
+    <div class="mt-head"><span class="flag">${FLAG[team]||""}</span> ${team}</div>
+    <div class="mt-sub">Currently ${ordinal(pos)} in Group ${g} · Round-of-32 opponent</div>
+    <div class="scen">
+      <div class="scen-title">If they finish <b>1st</b></div>
+      ${renderOpp(r32Opp(g, 1))}
+    </div>
+    <div class="scen">
+      <div class="scen-title">If they finish <b>2nd</b></div>
+      ${renderOpp(r32Opp(g, 2))}
+    </div>`;
+  $("#modalBack").classList.add("open");
+}
+function closeModal(){ $("#modalBack").classList.remove("open"); }
+
 function renderAll(){ renderGroups(); renderBracket(); renderTodayBar(); }
 
 /* ============================================================
@@ -1081,6 +1579,9 @@ document.addEventListener("click", e => {
     save(); rerender(renderBracket);
     return;
   }
+  // team name → Round-of-32 path modal
+  const jump = e.target.closest('[data-team],[data-jump]');
+  if(jump){ showTeamPath(jump.dataset.team || jump.dataset.jump); return; }
   // fixture preview — click anywhere on row except score inputs
   const fix = e.target.closest('.fix.has-preview');
   if(fix && !e.target.closest('input')){
@@ -1089,7 +1590,10 @@ document.addEventListener("click", e => {
   }
   // click modal backdrop to close
   if(e.target.id === 'prevModal') closePrev();
+  if(e.target.id === 'modalBack') closeModal();
 });
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeModal(); });
+$("#modalClose").onclick = closeModal;
 
 $("#themeBtn").onclick = () => {
   state.theme = state.theme==="dark" ? "light" : "dark";
