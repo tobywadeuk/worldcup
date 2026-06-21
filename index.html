@@ -279,6 +279,12 @@
     font-weight: 600; pointer-events: none; cursor: default;
   }
   .fix.confirmed .chip { background: var(--win); color: var(--paper); }
+  /* live fixture */
+  .fix.live-now { border-left: 2px solid var(--today); }
+  .fix.live-now input.sc { background:transparent; border-color:transparent; font-weight:600; pointer-events:none; cursor:default; color:var(--today); }
+  .chip.live-chip { background:var(--today); color:#fff; animation:livepulse 1.2s ease-in-out infinite; }
+  @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .tb-game.live-now .tb-sc { color:var(--today); animation:livepulse 1.2s ease-in-out infinite; }
 
   /* KO tie date/venue line */
   .tie .mwhen {
@@ -1069,7 +1075,13 @@ function blank(){ return { group:{}, ko:{}, pens:{}, theme:"light" }; }
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
 
 // CONFIRMED overrides user predictions for standings and display.
-function getMatchResult(no){ return CONFIRMED.group[no] || state.group[no] || null; }
+let LIVE = {}; // populated from worldcup26.ir API
+
+function getMatchResult(no){
+  const lv = LIVE[no];
+  if(lv) return {a:lv.a, b:lv.b};
+  return CONFIRMED.group[no] || state.group[no] || null;
+}
 
 // Short team abbreviation for compact displays.
 function abbr(name){
@@ -1274,14 +1286,22 @@ function renderGroups(){
     }).join("");
     const fixes = FIX[g].map(fx=>{
       const [no,iso,home,away,city] = fx;
-      const conf = CONFIRMED.group[no];
+      const lv = LIVE[no];
+      const conf = (lv&&lv.done ? {a:lv.a,b:lv.b} : null) || CONFIRMED.group[no];
+      const isLive = lv && !lv.done;
       const r = state.group[no] || {a:"",b:""};
       const off = dayOffset(iso);
       const dayCls = off===0?"today":off===1?"tomorrow":"";
-      const fixCls = [dayCls, conf?"confirmed":"", PREVIEWS[no]?"has-preview":""].filter(Boolean).join(' ');
-      const chip = conf?`<span class="chip">final</span>`:off===0?`<span class="chip">today</span>`:off===1?`<span class="chip">tomorrow</span>`:"";
-      const va = conf?conf.a:r.a, vb = conf?conf.b:r.b;
-      const locked = conf?"disabled":"";
+      const fixCls = [dayCls, conf?"confirmed":"", isLive?"live-now":"", PREVIEWS[no]?"has-preview":""].filter(Boolean).join(' ');
+      const liveLabel = isLive ? (lv.elapsed==='HT'?'HT':`${lv.elapsed}'`) : '';
+      const chip = isLive
+        ? `<span class="chip live-chip">${liveLabel||'LIVE'}</span>`
+        : conf ? `<span class="chip">final</span>`
+        : off===0 ? `<span class="chip">today</span>`
+        : off===1 ? `<span class="chip">tomorrow</span>` : "";
+      const va = conf?conf.a : isLive?lv.a : r.a;
+      const vb = conf?conf.b : isLive?lv.b : r.b;
+      const locked = (conf||isLive)?"disabled":"";
       return `<div class="fix ${fixCls}" data-no="${no}">
         <div class="when">${fmtWhen(iso)} ${chip}<span class="city">${city}</span></div>
         <div class="match">
@@ -1416,19 +1436,24 @@ function renderTodayBar(){
   games.sort((a, b) => new Date(a[1]) - new Date(b[1]));
   const chips = games.map(fx => {
     const [no,iso,home,away] = fx;
-    const conf = CONFIRMED.group[no], r = state.group[no];
+    const lv = LIVE[no];
+    const conf = (lv&&lv.done ? {a:lv.a,b:lv.b} : null) || CONFIRMED.group[no];
+    const isLive = lv && !lv.done;
+    const r = state.group[no];
     const hF=FLAG[home]||'', aF=FLAG[away]||'', hA=abbr(home), aA=abbr(away);
     let mid, done=false;
     if(conf){ mid=`${conf.a}–${conf.b}`; done=true; }
+    else if(isLive){ mid=`${lv.a}–${lv.b}`; }
     else if(r&&r.a!==''&&r.b!=='') mid=`${r.a}–${r.b}`;
     else{ const d=new Date(iso); mid=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
     let cdStr = '';
-    if(!done && !(r&&r.a!==''&&r.b!=='')){
+    if(!done && !isLive && !(r&&r.a!==''&&r.b!=='')){
       const diff = new Date(iso) - new Date();
       if(diff > 0) cdStr = 'in ' + fmtCountdown(diff);
     }
     const prevCls = PREVIEWS[no] ? ' has-prev' : '';
-    return `<span class="tb-game${done?' done':''}${prevCls}" data-no="${no}"><span class="tb-main">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}${cdStr?` <span class="tb-cd">${cdStr}</span>`:''}</span></span>`;
+    const liveCls = isLive ? ' live-now' : '';
+    return `<span class="tb-game${done?' done':''}${liveCls}${prevCls}" data-no="${no}"><span class="tb-main">${hF} ${hA} <span class="tb-sc">${mid}</span> ${aA} ${aF}${cdStr?` <span class="tb-cd">${cdStr}</span>`:''}${isLive?` <span class="tb-cd">${lv.elapsed==='HT'?'HT':`${lv.elapsed}'`}</span>`:''}</span></span>`;
   }).join('');
   // countdown only when no games today
   if(!champ && !games.length){
@@ -1507,6 +1532,31 @@ function showTeamPath(team){
 function closeModal(){ $("#modalBack").classList.remove("open"); }
 
 function renderAll(){ renderGroups(); renderBracket(); renderTodayBar(); }
+
+/* ============================================================
+   LIVE SCORES
+   ============================================================ */
+async function fetchLive(){
+  try {
+    const {games} = await (await fetch('https://worldcup26.ir/get/games')).json();
+    let changed = false;
+    games.forEach(g => {
+      if(g.home_score === null || g.home_score === undefined ||
+         g.away_score === null || g.away_score === undefined) return;
+      const no = +g.id;
+      const done = g.finished === 'TRUE';
+      const elapsed = g.time_elapsed;
+      // only store if game has started (finished or elapsed time present)
+      if(!done && (!elapsed || elapsed === 'finished')) return;
+      const entry = {a:String(g.home_score), b:String(g.away_score), done, elapsed};
+      const prev = LIVE[no];
+      if(!prev || prev.a !== entry.a || prev.b !== entry.b || prev.done !== entry.done){
+        LIVE[no] = entry; changed = true;
+      }
+    });
+    if(changed) renderAll();
+  } catch(e){}
+}
 
 /* ============================================================
    PREVIEW
@@ -1628,6 +1678,8 @@ document.body.classList.toggle("theme-dark", state.theme==="dark");
 
 renderAll();
 setInterval(renderTodayBar, 60000); // keep countdown live
+fetchLive();
+setInterval(fetchLive, 60000); // auto-update scores
 </script>
 </body>
 </html>
