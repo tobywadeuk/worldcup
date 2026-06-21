@@ -284,7 +284,7 @@
   .fix.live-now input.sc { background:transparent; border-color:transparent; font-weight:600; pointer-events:none; cursor:default; color:var(--today); }
   .chip.live-chip { background:var(--today); color:#fff; animation:livepulse 1.2s ease-in-out infinite; }
   @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-  .tb-game.live-now .tb-sc { color:var(--today); animation:livepulse 1.2s ease-in-out infinite; }
+  .tb-game.live-now .tb-sc { color:var(--today); }
 
   /* KO tie date/venue line */
   .tie .mwhen {
@@ -1541,14 +1541,13 @@ async function fetchLive(){
     const {games} = await (await fetch('https://worldcup26.ir/get/games')).json();
     let changed = false;
     games.forEach(g => {
-      if(g.home_score === null || g.home_score === undefined ||
-         g.away_score === null || g.away_score === undefined) return;
+      // API returns string "null" for unplayed games
+      if(!g.home_score || g.home_score === 'null' ||
+         !g.away_score || g.away_score === 'null') return;
+      if(g.time_elapsed === 'notstarted' || !g.time_elapsed) return;
       const no = +g.id;
       const done = g.finished === 'TRUE';
-      const elapsed = g.time_elapsed;
-      // only store if game has started (finished or elapsed time present)
-      if(!done && (!elapsed || elapsed === 'finished')) return;
-      const entry = {a:String(g.home_score), b:String(g.away_score), done, elapsed};
+      const entry = {a:String(g.home_score), b:String(g.away_score), done, elapsed:g.time_elapsed};
       const prev = LIVE[no];
       if(!prev || prev.a !== entry.a || prev.b !== entry.b || prev.done !== entry.done){
         LIVE[no] = entry; changed = true;
