@@ -1075,7 +1075,7 @@ function blank(){ return { group:{}, ko:{}, pens:{}, theme:"light" }; }
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
 
 // CONFIRMED overrides user predictions for standings and display.
-let LIVE = {}; // populated from worldcup26.ir API
+let LIVE = JSON.parse(localStorage.getItem('wc2026-live') || '{}'); // persists across refreshes
 
 function getMatchResult(no){
   const lv = LIVE[no];
@@ -1553,7 +1553,10 @@ async function fetchLive(){
         LIVE[no] = entry; changed = true;
       }
     });
-    if(changed) renderAll();
+    if(changed){
+      localStorage.setItem('wc2026-live', JSON.stringify(LIVE));
+      renderAll();
+    }
   } catch(e){}
 }
 
