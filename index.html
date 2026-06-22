@@ -217,6 +217,13 @@
   .tie .slot.tbd .team { color: var(--ink-faint); font-style: italic; }
   /* provisional group placing — settled once the group finishes */
   .tie .slot .nm.prov { border-bottom: 1px dotted var(--ink-faint); opacity: .85; }
+  /* projected matchup (Caley model) shown until the real team is known */
+  .tie .slot.tbd .team:has(.proj-team) { color: var(--ink-muted); font-style: normal; }
+  .tie .slot .nm.proj-team { border-bottom: 1px dashed var(--accent); }
+  .tie .mproj {
+    font-family: 'DM Mono', monospace; font-size: 8px; color: var(--accent);
+    text-align: center; margin-bottom: 3px; letter-spacing: .4px; font-weight: 600;
+  }
   .tie .slot.won .nm { font-weight: 600; color: var(--win); }
   .tie input.sc { width: 28px; height: 24px; font-size: 12px; border-radius: 5px; }
   .tie input.sc:focus { border-color: var(--accent); }
@@ -535,6 +542,29 @@ const KO_META = {
   102:{iso:"2026-07-15T19:00:00Z",city:"Atlanta"},
   103:{iso:"2026-07-18T21:00:00Z",city:"Miami"},
   104:{iso:"2026-07-19T19:00:00Z",city:"New York"}
+};
+
+// Projected R32 matchups — most-likely pairing per fixture from Michael Caley's
+// PADDLIN' model (Expecting Goals, 21 Jun 2026). Used only to fill a bracket slot
+// while its group is still unfinished; real results override the moment they land.
+// `a`/`b` align with each tie's source sides; `p` = probability the matchup occurs.
+const PROJ_R32 = {
+  73:{a:"South Korea", b:"Switzerland",  p:56},
+  74:{a:"Germany",     b:"Paraguay",     p:39},
+  75:{a:"Netherlands", b:"Morocco",      p:42},
+  76:{a:"Brazil",      b:"Japan",        p:27},
+  77:{a:"France",      b:"Sweden",       p:44},
+  78:{a:"Ivory Coast", b:"Norway",       p:48},
+  79:{a:"Mexico",      b:"Scotland",     p:47},
+  80:{a:"England",     b:"DR Congo",     p:32},
+  81:{a:"USA",         b:"Bosnia & H.",  p:60},
+  82:{a:"Belgium",     b:"Cape Verde",   p:13},
+  83:{a:"Portugal",    b:"Croatia",      p:30},
+  84:{a:"Spain",       b:"Austria",      p:43},
+  85:{a:"Canada",      b:"Egypt",        p:16},
+  86:{a:"Argentina",   b:"Uruguay",      p:53},
+  87:{a:"Colombia",    b:"Ghana",        p:25},
+  88:{a:"Australia",   b:"Egypt",        p:23}
 };
 
 // Official confirmed results — extend as the tournament progresses.
@@ -1192,6 +1222,12 @@ function resolveSource(src){
   if(src.t==='w'){ return koWinner(src.m); }
   return null;
 }
+// Is an R32 slot's source a *real* (finalised) team yet, vs. still a projection?
+function r32SlotFinal(src){
+  if(src.t==='g') return groupComplete(src.g);
+  if(src.t==='3') return groupsComplete();
+  return true;
+}
 function koWinner(m){
   const M = KO[m]; if(!M) return null;
   const ta = resolveSource(M.a), tb = resolveSource(M.b);
@@ -1327,18 +1363,27 @@ function renderGroups(){
 }
 
 function slotEl(m, side, src, resolved, winner){
+  // For R32 ties we show Caley's projected team until the feeding group is
+  // actually finished; everywhere else a resolved team is treated as final.
+  const isR32 = !!PROJ_R32[m];
+  const slotFinal = isR32 ? (!!resolved && r32SlotFinal(src)) : !!resolved;
+  const proj = (isR32 && !slotFinal) ? PROJ_R32[m][side] : null;
   const wrap = document.createElement("div");
-  wrap.className = "slot" + (resolved?"":" tbd") + (winner&&resolved===winner?" won":"");
+  wrap.className = "slot" + (slotFinal?"":" tbd") + (winner&&slotFinal&&resolved===winner?" won":"");
   let teamPart;
-  if(resolved){
-    // provisional = a live group placing whose group hasn't finished yet
-    const prov = src.t==='g' && !groupComplete(src.g);
+  if(slotFinal){
+    // provisional = a live (non-R32) group placing whose group hasn't finished yet
+    const prov = !isR32 && src.t==='g' && !groupComplete(src.g);
     teamPart = `<span class="team"><span class="flag">${FLAG[resolved]||""}</span><span class="nm${prov?' prov':''}">${resolved}</span></span>`;
+  }
+  else if(proj){
+    // projected from Caley's model until the real team is known
+    teamPart = `<span class="team"><span class="flag">${FLAG[proj]||""}</span><span class="nm proj-team">${proj}</span></span>`;
   }
   else if(src.t==='3') teamPart = `<span class="team"><span class="nm">3rd ${src.groups.join("/")}</span></span>`;
   else teamPart = `<span class="team"><span class="nm">${labelFor(src)}</span></span>`;
   const r = state.ko[m] || {a:"",b:""};
-  const disabled = resolved ? "" : "disabled";
+  const disabled = slotFinal ? "" : "disabled";
   wrap.innerHTML = `${teamPart}<input class="sc" type="number" min="0" inputmode="numeric" data-ko="${m}" data-side="${side}" value="${r[side]}" ${disabled}>`;
   return wrap;
 }
@@ -1354,7 +1399,12 @@ function tieEl(m){
   const el = document.createElement("div");
   el.className = "tie";
   const meta = KO_META[m];
-  el.innerHTML = `<div class="mno">Match ${m}</div>${meta?`<div class="mwhen">${fmtKoShort(meta.iso)} · ${meta.city}</div>`:''}`;
+  // projection probability shown only while both slots are still projected
+  const aFinal = !!ta && r32SlotFinal(M.a);
+  const bFinal = !!tb && r32SlotFinal(M.b);
+  const showProj = PROJ_R32[m] && !aFinal && !bFinal;
+  const projChip = showProj ? `<div class="mproj">proj ${PROJ_R32[m].p}%</div>` : '';
+  el.innerHTML = `<div class="mno">Match ${m}</div>${meta?`<div class="mwhen">${fmtKoShort(meta.iso)} · ${meta.city}</div>`:''}${projChip}`;
 
   el.appendChild(slotEl(m,'a',M.a,ta,w));
   el.appendChild(slotEl(m,'b',M.b,tb,w));
@@ -1389,9 +1439,9 @@ function renderBracket(){
     <div class="who ${w?'':'tbd'}">${w?`<span class="flag">${FLAG[w]||""}</span>${w}`:"—"}</div>`;
   host.appendChild(champ);
 
-  $("#koHint").textContent = groupsComplete()
+  $("#koHint").innerHTML = groupsComplete()
     ? "Groups are in — the eight best third-placed teams have been slotted automatically using FIFA's official allocation table."
-    : "Top 2 of each group qualify automatically. The eight best third-placed teams fill the dashed slots — these resolve themselves (via FIFA's official allocation) once every group match has a score.";
+    : "Round of 32 shows the <b>most-likely matchup</b> for each tie (with its probability) from Michael Caley's projection model, until each group finishes and the real teams lock in.";
 }
 
 /* preserve focus + caret + scroll across full re-render (no more jump) */
