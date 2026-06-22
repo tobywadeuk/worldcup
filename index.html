@@ -576,7 +576,10 @@ const PROJ_R32_FULL = {
 };
 // #1 pairing per fixture, used to fill the bracket slot until the real team is known
 const PROJ_R32 = {};
-for(const m in PROJ_R32_FULL){ const [a,b,p]=PROJ_R32_FULL[m][0]; PROJ_R32[+m]={a,b,p}; }
+// teams Caley's model projects into an R32 slot (the #1-matchup occupants). Used to
+// decide whether a team's per-team opponent breakdown is meaningful to show.
+const PROJ_TEAMS = new Set();
+for(const m in PROJ_R32_FULL){ const [a,b,p]=PROJ_R32_FULL[m][0]; PROJ_R32[+m]={a,b,p}; PROJ_TEAMS.add(a); PROJ_TEAMS.add(b); }
 // All projected R32 opponents for one team, highest probability first. A team can
 // reach the same opponent via different fixtures (depending where it finishes); those
 // paths are mutually exclusive, so we sum their probabilities into one figure.
@@ -1591,22 +1594,21 @@ function showTeamPath(team){
   const pos = s.findIndex(r => r.team===team) + 1;
   $("#modalBody").innerHTML = `
     <div class="mt-head"><span class="flag">${FLAG[team]||""}</span> ${team}</div>
-    <div class="mt-sub">Currently ${ordinal(pos)} in Group ${g} · Round-of-32 opponent</div>
-    <div class="scen">
-      <div class="scen-title">If they finish <b>1st</b></div>
-      ${renderOpp(r32Opp(g, 1))}
-    </div>
-    <div class="scen">
-      <div class="scen-title">If they finish <b>2nd</b></div>
-      ${renderOpp(r32Opp(g, 2))}
-    </div>
+    <div class="mt-sub">Currently ${ordinal(pos)} in Group ${g}</div>
     ${renderProjOpps(team)}`;
   $("#modalBack").classList.add("open");
 }
 // Caley's projected R32 opponents for this team, with probabilities
 function renderProjOpps(team){
   const ms = teamProjMatchups(team);
-  if(!ms.length) return '';
+  // Caley only publishes the top-4 pairing per fixture, so a team his model doesn't
+  // favour to qualify shows up only as low-probability noise — not worth a breakdown.
+  if(!PROJ_TEAMS.has(team) || !ms.length){
+    return `<div class="scen pj-block">
+      <div class="scen-title">R32 projection <span class="pj-src">· Caley model</span></div>
+      <div class="opp-head">Caley's model doesn't have <b>${team}</b> among the most-likely teams to reach the Round of 32, so there's no opponent breakdown.</div>
+    </div>`;
+  }
   const max = ms[0].p || 1;
   const rows = ms.map(({opp,p}) => `
     <div class="pj-row">
